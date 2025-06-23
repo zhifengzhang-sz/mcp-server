@@ -1,253 +1,365 @@
-# C1: Context Diagram - Phase 1 Design
+# C1: System Context - Plugin-Extensible Architecture
 
-> System Context and External Relationships  
-> Part of: [Phase 1 Design](phase.1.md)  
-> Objectives: [Phase 1 Objectives](../objective/phase.1.md)  
-> Date: June 17, 2025
+> **Plugin-Extensible System Context with Functional Design**  
+> **Design Framework**: C4 Model Level 1 (System Context)  
+> **Architecture**: [Phase 1 Design Overview](phase.1.md) + Plugin Architecture + Functional Programming  
+> **Next**: [C2: Container Design](container.phase.1.md)
 
-## Executive Summary
+## Objective Alignment
 
-The **MCP Server** serves as the central intelligence layer for enhancing developer productivity through two complementary AI-powered workflows. This system architecture addresses the critical gap between generic AI assistants and developer-specific needs by providing deep workspace awareness, context continuity, and intelligent tool orchestration.
+**Source**: [Phase 1 Objectives](../objective/phase.1.md) - Plugin-Ready MCP Server Foundation
 
-### Strategic Value Proposition
+**Objective Fulfillment**:
+- ✅ **Objective 1**: Plugin-Ready MCP Protocol Foundation → System context demonstrates plugin extension interfaces  
+- ✅ **Objective 2**: Functional Tool Registry → External system boundaries enable tool adapter integration
+- ✅ **Objective 3**: Modular LLM Integration → Local LLM provider interface abstraction
+- ✅ **Objective 4**: Event Sourcing Session Management → User and session boundaries support immutable patterns
+- ✅ **Objective 5**: Composable Context Assembly → Plugin boundaries enable context adapter composition
 
-1. **Context-Rich Local AI**: Transform local LLM interactions from generic Q&A to workspace-aware, conversation-threaded development assistance
-2. **Agent-Like VS Code Enhancement**: Enable complex, multi-step development tasks through intelligent tool orchestration within familiar IDE environments
-3. **Unified Intelligence Layer**: Provide consistent context management and learning across both interaction modalities
+## Plugin Architecture Context
 
-## System Context Diagrams
+**MCP Server Foundation** serves as a plugin-extensible universal tool integration platform, providing standardized access to development tools while establishing extension interfaces for future RAG, sAgent, and autonomous capabilities.
 
-### Objective 1: Context-Enhanced Local LLM Application
-
-**Vision**: CLI-based local LLM with workspace awareness and conversation continuity
-
-```mermaid
-graph TB
-    User[👤 Developer] 
-    CLIApp[💻 CLI LLM Application<br/>Command Line Interface]
-    MCP[🔗 MCP Server<br/>Context Enhancement Engine]
-    LocalLLM[🧠 Local LLM Service<br/>Ollama/Inference Engine]
-    
-    ContextSources[📚 Context Sources<br/>Files, Git, History, Knowledge]
-    
-    User -->|"CLI commands & queries"| CLIApp
-    CLIApp -->|"Request with query"| MCP
-    MCP -->|"Gather relevant context"| ContextSources
-    ContextSources -->|"Assembled context"| MCP
-    MCP -->|"Enhanced prompt + context"| LocalLLM
-    LocalLLM -->|"Generated response"| MCP
-    MCP -->|"Contextualized response"| CLIApp
-    CLIApp -->|"Enhanced answers"| User
-    
-    %% Bidirectional context flow
-    MCP -.->|"Store interaction history"| ContextSources
-    MCP -.->|"Learn usage patterns"| ContextSources
-    
-    style MCP fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style LocalLLM fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    style ContextSources fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style CLIApp fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-```
-
-### Objective 2: IDE Agent Applications Through Tool Ecosystem
-
-**Vision**: Multi-IDE agent applications with intelligent tool orchestration for complex development workflows
-
-#### Sub-Objective 2A: VS Code Copilot Chat Integration
+### Core System Context with Plugin Architecture
 
 ```mermaid
 graph TB
-    User[👤 Developer]
-    VSCode[🔧 VS Code + Copilot Chat<br/>IDE Environment]
-    CopilotLLM[🧠 Copilot LLM<br/>GitHub's LLM Service]
-    MCP[🔗 MCP Server<br/>Tool & Context Provider]
+    %% External Actors
+    Developer[👤 Developer]
     
-    Tools[🛠️ MCP Tools<br/>File, Git, API, Code]
-    Workspace[💻 Developer Workspace<br/>Files, Projects, Environment]
+    %% Client Systems
+    VSCode[🔧 VS Code + Copilot Chat<br/>IDE Integration]
+    CursorAI[🖱️ Cursor AI Chat<br/>IDE Integration]
+    CLITools[💻 CLI Tools<br/>Command Line Interface]
+    APIClients[🔗 API Clients<br/>External Integrations]
     
-    User -->|"Natural language goals"| VSCode
-    VSCode -->|"Get context & tools"| MCP
-    MCP -->|"Available tools & context"| VSCode
-    VSCode -->|"Enhanced prompt"| CopilotLLM
-    CopilotLLM -->|"Tool calls & reasoning"| VSCode
-    VSCode -->|"Execute tool calls"| MCP
-    MCP -->|"Execute tools"| Tools
-    Tools -->|"Modify & analyze"| Workspace
-    Tools -->|"Results"| MCP
-    MCP -->|"Tool results"| VSCode
-    VSCode -->|"Continue conversation"| CopilotLLM
-    CopilotLLM -->|"Final response"| VSCode
-    VSCode -->|"Goal completion"| User
+    %% Core Plugin-Ready System
+    subgraph MCPFoundation["🏗️ Plugin-Ready MCP Foundation"]
+        direction TB
+        MCPServer[📡 MCP Protocol Server<br/>Plugin-Enhanced Tool Platform]
+        PluginRegistry[🔌 Plugin Registry<br/>Extension Management]
+        FunctionalToolRegistry[🛠️ Functional Tool Registry<br/>15+ Essential Tools + Adapters]
+        EventSourcedSessions[👤 Event-Sourced Sessions<br/>Immutable State Management]
+        FunctionalContextEngine[📚 Functional Context Engine<br/>Plugin-Extensible Assembly]
+    end
     
-    style MCP fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    %% Plugin Extension Points (Future Phases)
+    subgraph PluginExtensions["🔌 Plugin Extension Points"]
+        direction LR
+        RAGPlugins[📚 Phase 2: RAG Plugins<br/>Semantic Enhancement]
+        sAgentPlugins[🤖 Phase 3: sAgent Plugins<br/>Agent Coordination]
+        AutonomyPlugins[🧠 Phase 4: Autonomy Plugins<br/>Self-Improvement]
+    end
+    
+    %% External Services
+    Ollama[🧠 Ollama Service<br/>Local LLM Infrastructure]
+    Redis[🗄️ Redis Cache<br/>Session Storage]
+    SQLite[💾 SQLite Database<br/>Persistence Layer]
+    FileSystem[📁 File System<br/>Workspace Access]
+    SystemAPIs[⚙️ System APIs<br/>Environment Access]
+    
+    %% Primary Interactions
+    Developer -->|"Development workflow"| VSCode
+    Developer -->|"Development workflow"| CursorAI
+    Developer -->|"Direct commands"| CLITools
+    
+    VSCode <-->|"MCP Protocol (JSON-RPC)"| MCPServer
+    CursorAI <-->|"MCP Protocol (JSON-RPC)"| MCPServer
+    CLITools <-->|"HTTP/REST API"| MCPServer
+    APIClients <-->|"HTTP/REST API"| MCPServer
+    
+    %% Plugin Architecture Interactions
+    MCPServer <-->|"Plugin registration & discovery"| PluginRegistry
+    PluginRegistry <-->|"Functional composition"| FunctionalToolRegistry
+    PluginRegistry <-->|"Context adaptation"| FunctionalContextEngine
+    EventSourcedSessions <-->|"Event handling"| PluginRegistry
+    
+    %% Plugin Extension Integration (Future)
+    PluginRegistry -.->|"Phase 2 extensions"| RAGPlugins
+    PluginRegistry -.->|"Phase 3 extensions"| sAgentPlugins
+    PluginRegistry -.->|"Phase 4 extensions"| AutonomyPlugins
+    
+    %% Tool Integration
+    FunctionalToolRegistry <-->|"File operations"| FileSystem
+    FunctionalToolRegistry <-->|"System calls"| SystemAPIs
+    FunctionalContextEngine <-->|"LLM inference"| Ollama
+    EventSourcedSessions <-->|"Session events"| Redis
+    MCPServer <-->|"Configuration & logs"| SQLite
+    
+    %% Styling
+    style MCPFoundation fill:#e1f5fe,stroke:#01579b,stroke-width:3px
+    style PluginExtensions fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style MCPServer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style PluginRegistry fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style FunctionalToolRegistry fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style EventSourcedSessions fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style FunctionalContextEngine fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
     style VSCode fill:#007acc,stroke:#ffffff,stroke-width:2px
-    style CopilotLLM fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    style Tools fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style CursorAI fill:#000000,stroke:#ffffff,stroke-width:2px
+    style Ollama fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
+    style Redis fill:#dc382d,stroke:#ffffff,stroke-width:2px
+    style SQLite fill:#003b57,stroke:#ffffff,stroke-width:2px
 ```
 
-#### Sub-Objective 2B: Cursor AI Chat Integration
+## Plugin Architecture System Boundaries
 
-```mermaid
-graph TB
-    User[👤 Developer]
-    Cursor[🖱️ Cursor + AI Chat<br/>IDE Environment]
-    CursorLLM[🧠 Cursor AI<br/>Cursor's LLM Service]
-    MCP[🔗 MCP Server<br/>Tool & Context Provider]
-    
-    Tools[🛠️ MCP Tools<br/>File, Git, API, Code]
-    Workspace[💻 Developer Workspace<br/>Files, Projects, Environment]
-    
-    User -->|"Natural language goals"| Cursor
-    Cursor -->|"Get context & tools"| MCP
-    MCP -->|"Available tools & context"| Cursor
-    Cursor -->|"Enhanced prompt"| CursorLLM
-    CursorLLM -->|"Tool calls & reasoning"| Cursor
-    Cursor -->|"Execute tool calls"| MCP
-    MCP -->|"Execute tools"| Tools
-    Tools -->|"Modify & analyze"| Workspace
-    Tools -->|"Results"| MCP
-    MCP -->|"Tool results"| Cursor
-    Cursor -->|"Continue conversation"| CursorLLM
-    CursorLLM -->|"Final response"| Cursor
-    Cursor -->|"Goal completion"| User
-    
-    style MCP fill:#e1f5fe,stroke:#01579b,stroke-width:3px
-    style Cursor fill:#000000,stroke:#ffffff,stroke-width:2px
-    style CursorLLM fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    style Tools fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+### Core System (Phase 1 Implementation)
+**Plugin-Ready MCP Foundation**: The plugin-extensible infrastructure we're building
+
+**Phase 1 Responsibilities**:
+- MCP protocol implementation with plugin integration points
+- Plugin registry system with functional composition patterns
+- Functional tool registry with adapter pattern for enhancement
+- Event-sourced session management with plugin-extensible event handlers
+- Functional context engine with plugin-extensible adapters
+- Security, monitoring, and performance optimization with plugin awareness
+
+**Plugin Extension Interfaces**:
+```
+Core Plugin Interfaces (Phase 1):
+├── PluginInterface: MCPRequest → Optional<Enhancement>
+├── ContextAdapter: Context → Context
+├── ToolAdapter: Tool → Tool
+├── EventHandler: SessionEvent → Optional<SessionEvent>
+├── RequestProcessor: MCPRequest → MCPRequest
+└── ResponseEnhancer: (MCPResponse, Context) → MCPResponse
 ```
 
-## Key System Relationships
+### Plugin Extension Points (Future Phases)
 
-### CLI Application Context (Objective 1)
-- **User ↔ CLI Application**: Direct command-line interaction providing workspace-aware responses
-- **CLI App ↔ MCP Server**: MCP protocol for context-enhanced LLM communication
-- **MCP Server ↔ Local LLM**: Context-enriched prompts with intelligent response processing
-- **MCP Server ↔ Context Sources**: Multi-source context assembly with learning and persistence
+#### Phase 2: RAG Plugin Extensions
+**RAG Intelligence Plugins**: Semantic enhancement without core modification
+- Context adapters for semantic enhancement
+- Tool adapters for vector-based intelligence
+- Knowledge base management plugins
+- Document processing enhancement plugins
 
-### IDE Integration Context (Objective 2)
+#### Phase 3: sAgent Plugin Extensions  
+**Specialized Agent Plugins**: Multi-agent coordination without core modification
+- Agent coordination plugins for task distribution
+- Specialized agent plugins (Code, Doc, Test, Analysis)
+- Agent workflow orchestration plugins
+- Inter-agent communication plugins
 
-#### VS Code Integration (Sub-Objective 2A)
-- **User ↔ VS Code**: Natural language interaction through Copilot Chat interface
-- **VS Code ↔ MCP Server**: Context and tool requests via MCP protocol
-- **VS Code ↔ Copilot LLM**: Enhanced prompts with MCP context and tool results
-- **MCP Server ↔ Tools**: Tool execution orchestrated by MCP server
-- **Tools ↔ Workspace**: Direct workspace modification and analysis
+#### Phase 4: Autonomy Plugin Extensions
+**Autonomous System Plugins**: Self-improvement without core modification
+- Self-improvement system plugins
+- Dynamic agent creation plugins
+- Autonomous goal setting plugins
+- Adaptive learning system plugins
 
-#### Cursor Integration (Sub-Objective 2B)
-- **User ↔ Cursor**: Natural language interaction through AI Chat interface
-- **Cursor ↔ MCP Server**: Context and tool requests via MCP protocol
-- **Cursor ↔ Cursor AI**: Enhanced prompts with MCP context and tool results
-- **MCP Server ↔ Tools**: Tool execution orchestrated by MCP server (shared with VS Code)
-- **Tools ↔ Workspace**: Direct workspace modification and analysis (shared workspace)
+### External Systems
 
-## System Boundary Definition
+#### IDE Integration Clients
+**VS Code + Copilot Chat**:
+- Connects via MCP protocol for plugin-enhanced tool access
+- Uses VS Code's built-in Copilot Chat interface
+- Leverages plugin-enhanced tools for workspace awareness
 
-### Core System Scope (Our Implementation)
-**MCP Server**: The central intelligence and orchestration layer providing:
-- **Context Assembly Engine**: Multi-source context gathering, filtering, and optimization
-- **Tool Orchestration Framework**: Safe, sandboxed execution of development tools
-- **Session Management**: Cross-application conversation continuity and state management
-- **Learning and Adaptation**: Pattern recognition and performance optimization
-- **Security and Sandboxing**: Access control and execution safety mechanisms
+**Cursor AI Chat**:
+- Integrates MCP server for advanced plugin-enhanced capabilities
+- Enhanced code analysis through plugin-extensible tools
+- Workspace intelligence through plugin-enhanced context assembly
 
-### External System Dependencies
+#### Infrastructure Services
+**Ollama (Local LLM)**:
+- Provides local language model inference
+- Plugin-extensible LLM integration patterns
+- Supports future plugin enhancements for model management
 
-**Required External Systems**:
-- **Local LLM Service** (Objective 1): Ollama or compatible inference engine
-- **VS Code + Copilot Extension** (Sub-Objective 2A): IDE environment with MCP support
-- **Cursor + AI Chat** (Sub-Objective 2B): IDE environment with MCP support
-- **Developer Workspace**: File system, git repositories, project structure (shared across all objectives)
+**Redis (Session Storage)**:
+- Event-sourced session persistence with immutable events
+- Plugin-extensible session state with event handlers
+- High-performance caching for plugin-enhanced operations
 
-**Optional External Integrations**:
-- **Documentation APIs**: GitHub, Stack Overflow, language-specific docs
-- **Code Analysis Services**: Linting, security scanning, dependency analysis
-- **Development Tools**: CI/CD pipelines, testing frameworks, deployment platforms
+**SQLite (Configuration & Logs)**:
+- Plugin configuration management and registry
+- Audit logging with plugin-aware operations
+- Performance metrics collection across plugins
 
-## Key Concepts and Definitions
+## Key Plugin-Aware Relationships
 
-### Core System Concepts
+### 1. IDE ↔ Plugin-Enhanced MCP Server
+**Protocol**: MCP over JSON-RPC with plugin enhancements
+**Interaction Pattern**: Tool discovery → Plugin-enhanced execution → Results processing
+**Extension Points**: Plugin adapters enhance tools and context without protocol changes
 
-#### MCP Server (Model Context Protocol Server)
-**Definition**: Central intelligence layer implementing MCP specification for context enhancement and tool orchestration.
-
-**Key Properties**:
-- **Stateful**: Via Session Manager integration for persistent conversations
-- **Extensible**: Through Tool Orchestrator plugins and Context Manager adapters  
-- **Secure**: Using Tool Orchestrator sandboxing and access validation
-- **Protocol-agnostic**: MCP abstraction supporting multiple clients
-
-**Objective Alignment**:
-- **Objective 1**: Context enhancement engine coordinating workspace awareness
-- **Objective 2**: Tool orchestration hub managing workspace manipulation
-
-#### Context Manager
-**Definition**: Intelligent assembly and optimization of relevant context for LLM interactions.
-
-**Key Properties**:
-- **Token-aware**: LLM context window tracking with intelligent truncation
-- **Adaptive**: Via Session Manager feedback loops and effectiveness metrics
-- **Multi-modal**: Specialized adapters for files, git, conversations, APIs
-- **Performance-optimized**: Multi-level caching and semantic indexing
-
-**Objective Alignment**:
-- **Objective 1**: Primary enabler for workspace context and conversation history
-- **Objective 2**: Supporting workspace intelligence for tool selection
-
-#### Tool Orchestrator  
-**Definition**: Safe execution manager for development tools and workspace operations.
-
-**Key Properties**:
-- **Sandboxed**: Containerized execution with filesystem/network isolation
-- **Transactional**: Workspace snapshots with atomic rollback
-- **Extensible**: Standardized interfaces with dynamic plugin registration
-- **Audit-compliant**: Comprehensive logging via Session Manager
-
-**Objective Alignment**:
-- **Objective 1**: Limited role for workspace analysis tools
-- **Objective 2**: Primary enabler for multi-step development workflows
-
-#### Session Manager
-**Definition**: Conversation continuity and state management across interactions and applications.
-
-**Key Properties**:
-- **Persistent**: Database integration with conversation threading
-- **Cross-application**: Unified session identifiers via MCP abstraction
-- **Privacy-aware**: Configurable retention policies and encryption
-- **Performance-optimized**: Lazy loading and incremental synchronization
-
-**Objective Alignment**:
-- **Objective 1**: Critical for conversation continuity across CLI sessions
-- **Objective 2**: Supporting infrastructure for tool execution history
-
-## Interaction Patterns
-
-### Pattern 1: CLI Context Enhancement (Objective 1)
 ```
-Query → Context Discovery → Multi-Source Assembly → LLM Enhancement → Response → Learning
+IDE Agent: "List files in current directory"
+MCP Server: Execute file_list tool → Apply registered tool adapters → Return enhanced results
+Plugin Example: Phase 2 RAG adapter adds semantic metadata to file listings
 ```
 
-**Component Flow**: MCP Server receives CLI query → Context Manager assembles workspace/conversation context → MCP Server enhances local LLM prompt → Session Manager stores patterns for learning
+### 2. Plugin Registry ↔ Functional Context Engine
+**Pattern**: Functional composition with plugin adapters
+**Interaction**: Context assembly → Plugin adapter chain → Enhanced context
+**Extension**: Phase 2-4 plugins register context adapters for enhancement
 
-**Performance**: < 3 seconds end-to-end, > 85% context relevance
-
-### Pattern 2: IDE Tool Orchestration (Objective 2)  
 ```
-Goal → Decomposition → Tool Selection → Execution Planning → Sequential Execution → Validation
+Context Assembly: Base workspace context
+Plugin Enhancement: RAG adapter → Agent context adapter → Autonomy adapter
+Result: Progressively enhanced context through functional composition
 ```
 
-**VS Code Flow**: MCP Server receives VS Code goal → Tool Orchestrator decomposes and selects tools → Context Manager provides workspace intelligence → Tool Orchestrator executes in sequence → Session Manager records patterns
+### 3. Functional Tool Registry ↔ Plugin Adapters
+**Pattern**: Tool enhancement through adapter pattern
+**Interaction**: Base tool → Plugin adapter chain → Enhanced tool
+**Composition**: Functional composition of tool adapters
 
-**Cursor Flow**: MCP Server receives Cursor goal → Tool Orchestrator decomposes and selects tools → Context Manager provides workspace intelligence → Tool Orchestrator executes in sequence → Session Manager records patterns
+```
+Base Tool: file_read(path: string) → content: string
+Phase 2 Enhancement: semantic_file_read(path, query) → content + semantic_relevance
+Phase 3 Enhancement: agent_file_read(path, agent_context) → content + agent_analysis
+Phase 4 Enhancement: autonomous_file_read(path, goals) → content + autonomous_insights
+```
 
-**Performance**: < 1 second planning, 90%+ task success rate (both IDEs)
+### 4. Event-Sourced Sessions ↔ Plugin Event Handlers
+**Pattern**: Event sourcing with plugin-extensible event handling
+**Interaction**: Session events → Plugin event handlers → Enhanced events
+**Persistence**: Immutable event streams with plugin enhancements
 
-### Cross-Pattern Synergies
-- Context Manager maintains unified workspace model across all objectives (CLI, VS Code, Cursor)
-- Session Manager provides conversation threading across CLI/VS Code/Cursor
-- Tool execution results enhance context quality for future interactions across all environments
-- Shared tool registry and execution patterns benefit all IDE integrations
+```
+Session Event: user_query_submitted(query, timestamp)
+Plugin Processing: RAG handler adds semantic context, Agent handler adds coordination
+Result: Enhanced event with plugin contributions preserved immutably
+```
+
+## Plugin Security Context
+
+### Trust Boundaries with Plugin Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Trusted Core Zone                       │
+│  ┌─────────────────┐    ┌─────────────────┐                │
+│  │   MCP Server    │    │  Plugin Registry│                │
+│  │   Core          │    │   (Validated)   │                │
+│  └─────────────────┘    └─────────────────┘                │
+└─────────────────────────────────────────────────────────────┘
+              ↕ Plugin Interface Validation
+┌─────────────────────────────────────────────────────────────┐
+│                   Plugin Execution Zone                    │
+│  ┌─────────────────┐    ┌─────────────────┐                │
+│  │  Phase 2-4      │    │  External       │                │
+│  │  Plugins        │    │  Resources      │                │
+│  └─────────────────┘    └─────────────────┘                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Plugin Security Controls
+- **Interface Validation**: All plugin interfaces validated against contracts
+- **Plugin Sandboxing**: Plugin execution isolated with permission controls
+- **Resource Limits**: Plugin-specific execution time and memory constraints
+- **Audit Logging**: Complete plugin operation tracking for security analysis
+
+## Functional Programming Context
+
+### Immutable Data Structures
+**Context Objects**: Immutable with transformation functions
+**Session State**: Event-sourced immutable state reconstruction
+**Tool Definitions**: Immutable with functional adapter enhancement
+**Plugin Chain**: Immutable plugin composition with functional patterns
+
+### Pure Function Composition
+**Plugin Processing**: Pure functions with no side effects
+**Context Assembly**: Functional composition of context sources
+**Tool Enhancement**: Functional composition of tool adapters
+**Event Handling**: Pure event transformation functions
+
+## Performance Context with Plugin Architecture
+
+### Response Time Requirements (with Plugin Overhead)
+- **MCP Protocol**: < 50ms request processing (including plugin chain)
+- **Plugin Chain**: < 10ms additional latency per plugin
+- **Tool Execution**: < 2s typical (including plugin enhancements)
+- **Context Assembly**: < 200ms (including plugin adapters)
+
+### Plugin-Aware Scalability Design
+- **Concurrent Sessions**: 50+ active sessions with plugin processing
+- **Plugin Operations**: 100+ plugin executions/minute capacity
+- **Memory Efficiency**: < 2GB base + plugin memory footprint
+- **Plugin Isolation**: Resource isolation between plugin instances
+
+## Integration Patterns with Plugin Architecture
+
+### Plugin-Enhanced MCP Protocol Integration
+```
+Plugin-Aware Tool Registration Pattern:
+  plugin_registry.register_plugin(SemanticFilePlugin())
+  enhanced_tools ← tool_registry.get_enhanced_tools()  # Tools with plugin adapters
+
+Plugin-Enhanced Request Processing:
+  request ← MCPRequest(method="tool_call", tool="file_read", params={"path": "file.py"})
+  enhanced_request ← plugin_registry.process_request(request)  # Plugin enhancements
+  response ← mcp_server.handle_request(enhanced_request)
+```
+
+### Functional Plugin Composition
+```
+Plugin Chain Composition:
+  processWithPlugins(plugins, request) = 
+    fold(applyPlugin, initialResponse(request), plugins)
+
+Context Enhancement Pipeline:
+  enhanceContext(adapters, context) = 
+    fold(applyAdapter, context, adapters)
+  applyAdapter(currentContext, adapter) = adapter.adapt(currentContext)
+```
+
+## Future Extension Points
+
+### Phase 2 Preparation (RAG Integration)
+- **Document Processing**: Hooks for LlamaIndex integration
+- **Vector Storage**: ChromaDB integration points
+- **Semantic Search**: Enhanced context assembly with embeddings
+- **Advanced Context**: Intelligent document retrieval
+
+### Phase 3 Preparation (sAgent Development)
+- **Agent Interfaces**: Specialized agent connectivity protocols
+- **Multi-Agent Coordination**: Workflow orchestration capabilities  
+- **Model Management**: Advanced model selection and optimization
+- **Performance Monitoring**: Comprehensive agent performance analytics
+
+## Design Consistency Matrix
+
+### **Cross-Document Alignment** ✅
+
+| Design Document | Relationship to System Context | Key Elements |
+|-----------------|------------------------------|--------------|
+| **[Phase 1 Overview](phase.1.md)** | Parent architecture document | Strategic principles, objective alignment |
+| **[C2: Container Design](container.phase.1.md)** | Next design level | Plugin Registry, Context Engine, Tool Executor containers |
+| **[C3: Component Design](component.phase.1.md)** | Implementation details | Plugin interface components, functional adapters |
+| **[Flow Design](flow.phase.1.md)** | Interaction patterns | Plugin-enhanced request flows, context assembly patterns |
+
+### **Plugin Architecture Boundaries** ✅
+
+**External System Integration Points**:
+- **VS Code/Cursor IDE Extensions** → MCP Protocol → Plugin Enhancement Chain
+- **Local LLM (Ollama)** → Provider Interface → Context-Enhanced Processing  
+- **File System/Git/APIs** → Tool Interface → Adapter Enhancement Framework
+- **Developers** → Session Interface → Event-Sourced State Management
+
+**Phase Extension Readiness**:
+- **Phase 2 RAG**: Context adapter interfaces ready for semantic enhancement
+- **Phase 3 sAgent**: Tool adapter interfaces ready for agent coordination
+- **Phase 4 Autonomy**: Plugin interfaces ready for autonomous system integration
+
+### **Functional Programming Integration** ✅
+
+**Immutable Boundaries**:
+- User interactions → Immutable session events → Event sourcing system
+- Tool requests → Pure function execution → Immutable results
+- Context assembly → Functional composition → Enhanced context
+
+**Plugin Composition**:
+- External requests → Plugin chain composition → Enhanced responses
+- Base tools → Adapter function application → Enhanced capabilities
+- Core context → Adapter pipeline → Enriched context
 
 ---
 
-**Next**: [C2: Container Diagram](container.phase.1.md)
+**Context Complete**: This foundation context supports immediate Phase 1 implementation while preparing architectural hooks for Phase 2 RAG integration and Phase 3 sAgent development.
+
+**Implementation Readiness**: All plugin interfaces and extension points defined for immediate Phase 1 implementation and future phase enhancement.
+
+**Design Traceability**: System context directly implements [Phase 1 Objectives](../objective/phase.1.md) through plugin-ready architecture boundaries.

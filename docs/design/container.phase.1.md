@@ -1,11 +1,11 @@
-# C2: Container Diagram - Phase 1 Design
+# C2: Container Design - Plugin-Ready Architecture
 
-> High-level System Architecture  
-> Part of: [Phase 1 Design](phase.1.md)  
-> Previous: [C1: Context Diagram](context.phase.1.md)  
-> Date: June 17, 2025
+> **Plugin-Extensible Container Architecture**  
+> **Part of**: [Phase 1 Design](phase.1.md)  
+> **Previous**: [C1: Context Design](context.phase.1.md)  
+> **Architecture**: Functional programming + Plugin composition patterns
 
-## System Container Diagram
+## Plugin-Ready System Container Diagram
 
 ```mermaid
 graph TB
@@ -19,60 +19,83 @@ graph TB
     Git[🔄 Git Repository<br/>Version Control]
     ExternalAPIs[🌐 External APIs<br/>Documentation & Services]
     
-    %% Interface Layer
-    subgraph InterfaceLayer["🔌 Interface Layer"]
-        CLIInterface[📱 CLI Interface Container<br/>Command Line Processing]
-        MCPProtocol[📡 MCP Protocol Container<br/>IDE Communication (VS Code & Cursor)]
+    %% Interface Layer - Plugin-Enhanced
+    subgraph InterfaceLayer["🔌 Plugin-Enhanced Interface Layer"]
+        direction TB
+        CLIInterface[📱 CLI Interface Container<br/>Functional Request Processing]
+        MCPProtocol[📡 MCP Protocol Container<br/>Plugin-Enhanced IDE Communication]
     end
     
-    %% Core Processing Layer
-    subgraph CoreLayer["⚙️ Core Processing Layer"]
-        FlowCoordinator[⚡ Flow Coordinator Container<br/>Request Orchestration]
-        ContextEngine[🔍 Context Engine Container<br/>Intelligent Context Assembly]
-        ToolExecutor[🛠️ Tool Executor Container<br/>Workspace Operations]
-        LLMInterface[🎯 LLM Interface Container<br/>Model Communication]
+    %% Core Plugin System
+    subgraph PluginCore["🔌 Core Plugin System"]
+        direction TB
+        PluginRegistry[🔌 Plugin Registry Container<br/>Functional Plugin Composition]
+        PluginOrchestrator[⚡ Plugin Orchestrator Container<br/>Plugin Chain Coordination]
+    end
+    
+    %% Functional Processing Layer
+    subgraph FunctionalLayer["⚙️ Functional Processing Layer"]
+        direction TB
+        FunctionalContextEngine[🔍 Functional Context Engine<br/>Immutable Context Assembly]
+        FunctionalToolRegistry[🛠️ Functional Tool Registry<br/>Adapter Pattern Tools]
+        EventSourcedSessions[👤 Event-Sourced Sessions<br/>Immutable State Management]
+        LLMInterface[🎯 LLM Interface Container<br/>Plugin-Enhanced Model Communication]
+    end
+    
+    %% Plugin Extension Points (Future Phases)
+    subgraph PluginExtensions["🔌 Plugin Extension Points"]
+        direction LR
+        RAGPlugins[📚 Phase 2: RAG Plugins<br/>Semantic Enhancement]
+        sAgentPlugins[🤖 Phase 3: sAgent Plugins<br/>Agent Coordination]
+        AutonomyPlugins[🧠 Phase 4: Autonomy Plugins<br/>Self-Improvement]
     end
     
     %% Storage Layer
-    subgraph StorageLayer["💾 Storage Layer"]
-        ConversationStore[(💬 Conversation Store<br/>Dialogue History)]
-        DocumentIndex[(📚 Document Index<br/>Semantic Search)]
-        SessionState[(⚡ Session State<br/>Active Cache)]
+    subgraph StorageLayer["💾 Immutable Storage Layer"]
+        direction LR
+        EventStore[(📝 Event Store<br/>Immutable Event Streams)]
+        ContextCache[(📚 Context Cache<br/>Functional Context Storage)]
+        PluginStore[(🔌 Plugin Store<br/>Plugin Configurations)]
     end
     
-    %% External Connections - Objective 1 (CLI)
+    %% External Connections - Direct API Mode
     Developer -->|"CLI commands & queries"| CLIApp
-    CLIApp <==>|"Direct API calls"| CLIInterface
-    CLIInterface <==>|"Context requests"| FlowCoordinator
+    CLIApp <==>|"HTTP/REST API"| CLIInterface
+    CLIInterface <==>|"Plugin-enhanced requests"| PluginOrchestrator
     
-    %% External Connections - Objective 2 (IDE Agents)
+    %% External Connections - MCP Protocol Mode
     Developer -->|"Natural language goals"| VSCode
     Developer -->|"Natural language goals"| Cursor
     VSCode <==>|"MCP Protocol (JSON-RPC)"| MCPProtocol
     Cursor <==>|"MCP Protocol (JSON-RPC)"| MCPProtocol
-    MCPProtocol <==>|"Tool & context requests"| FlowCoordinator
+    MCPProtocol <==>|"Plugin-enhanced MCP"| PluginOrchestrator
     
-    %% Core Processing Flow
-    FlowCoordinator <==>|"Context assembly"| ContextEngine
-    FlowCoordinator <==>|"Tool execution"| ToolExecutor
-    FlowCoordinator <==>|"LLM inference"| LLMInterface
+    %% Plugin System Flow
+    PluginOrchestrator <==>|"Plugin registration & discovery"| PluginRegistry
+    PluginOrchestrator <==>|"Functional context assembly"| FunctionalContextEngine
+    PluginOrchestrator <==>|"Tool adapter chains"| FunctionalToolRegistry
+    PluginOrchestrator <==>|"Event handling"| EventSourcedSessions
+    PluginOrchestrator <==>|"Enhanced LLM integration"| LLMInterface
     
-    %% LLM Integration
-    LLMInterface <==>|"Enhanced prompts & responses"| LocalLLM
+    %% Plugin Extensions (Future)
+    PluginRegistry -.->|"Phase 2 registration"| RAGPlugins
+    PluginRegistry -.->|"Phase 3 registration"| sAgentPlugins
+    PluginRegistry -.->|"Phase 4 registration"| AutonomyPlugins
     
-    %% Tool Operations
-    ToolExecutor <==>|"File operations"| FileSystem
-    ToolExecutor <==>|"Git operations"| Git
-    ToolExecutor <==>|"API calls"| ExternalAPIs
+    %% External System Integration
+    LLMInterface <==>|"Context-enhanced prompts"| LocalLLM
+    FunctionalToolRegistry <==>|"Immutable file operations"| FileSystem
+    FunctionalToolRegistry <==>|"Git operations"| Git
+    FunctionalToolRegistry <==>|"API calls"| ExternalAPIs
     
     %% Storage Interactions
-    ContextEngine <==>|"Conversation data"| ConversationStore
-    ContextEngine <==>|"Document search"| DocumentIndex
-    FlowCoordinator <==>|"Session coordination"| SessionState
+    EventSourcedSessions <==>|"Event streams"| EventStore
+    FunctionalContextEngine <==>|"Context caching"| ContextCache
+    PluginRegistry <==>|"Plugin metadata"| PluginStore
     
-    %% Background Operations
-    ToolExecutor -.->|"Index tool results"| DocumentIndex
-    ContextEngine -.->|"Store patterns"| ConversationStore
+    %% Background Operations (Functional)
+    FunctionalToolRegistry -.->|"Tool usage events"| EventStore
+    FunctionalContextEngine -.->|"Context assembly events"| EventStore
     
     %% Styling
     style Developer fill:#f9f9f9,stroke:#333,stroke-width:2px
@@ -83,20 +106,411 @@ graph TB
     
     style CLIInterface fill:#fff3e0,stroke:#e65100,stroke-width:2px
     style MCPProtocol fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style FlowCoordinator fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
-    style ContextEngine fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style ToolExecutor fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style PluginRegistry fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    style PluginOrchestrator fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    style FunctionalContextEngine fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style FunctionalToolRegistry fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style EventSourcedSessions fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     style LLMInterface fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     
-    style ConversationStore fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    style DocumentIndex fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style SessionState fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style PluginExtensions fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style EventStore fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style ContextCache fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style PluginStore fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
 ```
 
-## Container Responsibilities
+## Container Responsibilities with Plugin Architecture
 
-### Interface Layer Containers
+### Plugin-Enhanced Interface Layer
 
+**CLI Interface Container**
+- **Primary Function**: Handle CLI application requests with plugin-enhanced processing
+- **Key Capabilities**: HTTP/REST API server, functional request processing, plugin-aware response formatting
+- **Plugin Integration**: Automatic plugin discovery and chain application for CLI requests
+- **Functional Patterns**: Immutable request/response objects with pure transformation functions
+
+**MCP Protocol Container**
+- **Primary Function**: Handle MCP protocol communication with plugin enhancement points
+- **Key Capabilities**: JSON-RPC over stdio/HTTP, protocol validation, plugin-enhanced tool discovery
+- **Plugin Integration**: Plugin adapters can enhance MCP responses without protocol modification
+- **Multi-IDE Support**: Unified protocol handling for VS Code, Cursor, and future IDE integrations
+
+### Core Plugin System
+
+**Plugin Registry Container**
+- **Primary Function**: Central plugin management with functional composition patterns
+- **Key Capabilities**: Plugin lifecycle management, interface validation, dependency resolution
+- **Plugin Composition**: Functional composition of plugin chains for request processing
+- **Extension Points**: Clean interfaces for Phase 2-4 plugin registration
+
+```
+PluginRegistry Operations:
+  - register(plugin: Plugin) → PluginRegistry
+  - discover(interface: PluginInterface) → Plugin[]
+  - compose(plugins: Plugin[]) → (request: MCPRequest) → MCPResponse
+  - validate(plugin: Plugin) → ValidationResult
+```
+
+**Plugin Orchestrator Container**
+- **Primary Function**: Coordinate plugin execution and functional composition
+- **Key Capabilities**: Plugin chain execution, error isolation, performance monitoring
+- **Functional Coordination**: Pure function composition of plugin operations
+- **State Management**: Immutable plugin execution state with event sourcing
+
+```
+PluginOrchestrator Operations:
+  - executeChain(plugins: Plugin[], request: MCPRequest) → MCPResponse
+  - isolateErrors(pluginResult: PluginResult) → SafeResult  
+  - composeAdapters(adapters: Adapter[]) → CompositeAdapter
+  - trackPerformance(execution: PluginExecution) → PerformanceMetrics
+```
+
+### Functional Processing Layer
+
+**Functional Context Engine Container**
+- **Primary Function**: Immutable context assembly with plugin-extensible adapters
+- **Key Capabilities**: Functional context composition, plugin adapter chains, token optimization
+- **Context Adapters**: Plugin-extensible context enhancement through adapter pattern
+- **Immutable Operations**: All context operations preserve immutability with structural sharing
+
+```
+FunctionalContextEngine Operations:
+  - assemble(sources: ContextSource[]) → Context
+  - enhance(adapters: ContextAdapter[], context: Context) → Context
+  - optimize(constraints: TokenConstraints, context: Context) → Context
+  - compose(contexts: Context[]) → Context
+```
+
+**Functional Tool Registry Container** 
+- **Primary Function**: Immutable tool registry with adapter pattern for enhancement
+- **Key Capabilities**: Tool registration, adapter chain application, secure execution
+- **Tool Adapters**: Plugin-extensible tool enhancement without modifying core tools
+- **Functional Execution**: Pure function execution with immutable tool definitions
+
+```
+FunctionalToolRegistry Operations:
+  - register(tool: Tool) → ToolRegistry
+  - enhance(adapters: ToolAdapter[], tool: Tool) → Tool
+  - execute(tool: Tool, request: ToolRequest) → ToolResult
+  - chain(tools: Tool[], context: ExecutionContext) → ToolResult
+```
+
+**Event-Sourced Sessions Container**
+- **Primary Function**: Immutable session management with plugin-extensible event handling
+- **Key Capabilities**: Event sourcing, immutable state reconstruction, plugin event handlers
+- **Event Handling**: Plugin-extensible event processing with functional composition
+- **Session Continuity**: Conversation state preserved across plugin enhancements
+
+```
+EventSourcedSessions Operations:
+  - createSession(id: SessionId) → Session
+  - appendEvent(session: Session, event: SessionEvent) → Session
+  - reconstructState(events: SessionEvent[]) → SessionState
+  - handleEvent(handlers: EventHandler[], event: SessionEvent) → SessionEvent
+```
+
+**LLM Interface Container**
+- **Purpose**: Plugin-enhanced local LLM communication with functional patterns
+- **Key Capabilities**: Context-enhanced prompts, plugin-aware model selection, response optimization
+- **Plugin Integration**: Context adapters can enhance prompts, response enhancers can process outputs
+- **Functional Design**: Pure function composition for prompt assembly and response processing
+
+### Plugin Extension Points (Future Phases)
+
+#### Phase 2: RAG Plugin Extensions
+**RAG Plugins Container** (Future):
+- Context adapters for semantic enhancement
+- Tool adapters for vector-based intelligence  
+- Knowledge base management plugins
+- Document processing enhancement plugins
+
+#### Phase 3: sAgent Plugin Extensions
+**sAgent Plugins Container** (Future):
+- Agent coordination plugins for task distribution
+- Specialized agent plugins (Code, Doc, Test, Analysis)
+- Agent workflow orchestration plugins
+- Inter-agent communication plugins
+
+#### Phase 4: Autonomy Plugin Extensions
+**Autonomy Plugins Container** (Future):
+- Self-improvement system plugins
+- Dynamic agent creation plugins
+- Autonomous goal setting plugins
+- Adaptive learning system plugins
+
+### Immutable Storage Layer
+
+#### Event Store Container
+**Primary Purpose**: Immutable event storage with plugin-aware event handling
+
+**Key Responsibilities**:
+- **Event Persistence**: Append-only event streams with immutable events
+- **Event Replay**: Session state reconstruction from event streams
+- **Plugin Events**: Plugin-generated events stored alongside core events
+- **Event Querying**: Functional query interface for event analysis
+
+**Interface Contract**:
+  ```
+EventStore Operations:
+  - appendEvent(stream: StreamId, event: Event) → EventStream
+  - readEvents(stream: StreamId, from?: EventId) → Event[]
+  - queryEvents(predicate: EventPredicate) → Event[]
+  - replayEvents(stream: StreamId, handler: EventHandler) → SessionState
+```
+
+#### Context Cache Container
+**Primary Purpose**: High-performance caching of functional context assemblies
+
+**Key Responsibilities**:
+- **Context Caching**: Immutable context objects with structural sharing
+- **Cache Invalidation**: Event-driven cache invalidation based on workspace changes
+- **Plugin-Aware Caching**: Cache keys include plugin adapter chains for proper invalidation
+- **Performance Optimization**: Sub-millisecond context retrieval for frequent patterns
+
+#### Plugin Store Container
+**Primary Purpose**: Plugin configuration and metadata storage
+
+**Key Responsibilities**:
+- **Plugin Metadata**: Plugin registration information and capabilities
+- **Configuration Storage**: Plugin-specific configuration with validation
+- **Dependency Tracking**: Plugin dependency graphs and resolution
+- **Version Management**: Plugin version compatibility and update tracking
+
+## Inter-Container Communication Patterns
+
+### Functional Request Flow Pattern
+```
+Request Flow with Plugin Enhancement:
+CLI/MCP Request 
+→ Plugin Orchestrator 
+→ Plugin Registry (discover applicable plugins)
+→ Functional Context Engine (assemble + enhance context)
+→ Functional Tool Registry (execute + enhance tools)
+→ Event-Sourced Sessions (record + handle events)
+→ Plugin Orchestrator (compose results)
+→ CLI/MCP Response
+```
+
+### Plugin Composition Pattern
+```
+Plugin Chain Composition:
+  processRequest(plugins, request) = 
+    fold(applyPlugin, initialResponse(request), plugins)
+
+Context Enhancement Pipeline:
+  enhanceContext(adapters, context) = 
+    fold(applyAdapter, context, adapters)
+  applyAdapter(currentContext, adapter) = adapter.enhance(currentContext)
+
+Tool Adapter Application:
+  enhanceTools(adapters, tools) = 
+    map(enhanceTool, tools)
+  enhanceTool(tool) = fold(applyAdapter, tool, adapters)
+```
+
+### Event Sourcing Pattern
+```
+// Immutable event handling with plugin extensions
+EventHandler Operations:
+  - handle(event: SessionEvent) → Optional<SessionEvent>
+
+// Plugin event processing
+function processEventWithPlugins(
+  handlers: EventHandler[], 
+  event: SessionEvent
+): SessionEvent {
+  return handlers.reduce(
+    (currentEvent, handler) => handler.handle(currentEvent) || currentEvent,
+    event
+  )
+}
+```
+
+## Performance Characteristics
+
+### Plugin-Aware Performance Targets
+- **Plugin Registration**: < 10ms per plugin registration
+- **Plugin Discovery**: < 5ms for applicable plugin identification
+- **Plugin Chain Execution**: < 10ms overhead per plugin in chain
+- **Context Enhancement**: < 50ms for plugin-enhanced context assembly
+- **Tool Adapter Application**: < 20ms for plugin-enhanced tool execution
+
+### Functional Programming Benefits
+- **Memory Efficiency**: Structural sharing reduces memory footprint
+- **Parallelization**: Pure functions enable safe parallel execution
+- **Predictability**: Immutable data eliminates race conditions
+- **Testing**: Pure functions are easily testable in isolation
+
+### Plugin Isolation
+- **Error Isolation**: Plugin failures don't affect core functionality
+- **Resource Isolation**: Plugin memory and CPU usage monitored and limited
+- **Security Isolation**: Plugin execution sandboxed with permission controls
+- **Performance Isolation**: Plugin performance monitoring and throttling
+
+## Container Deployment Patterns
+
+### Development Mode
+- All containers in single process for development efficiency
+- Plugin hot-reloading for rapid development iteration  
+- Enhanced debugging with plugin execution tracing
+- Local storage for all persistence layers
+
+### Production Mode
+- Container separation for scalability and reliability
+- Plugin validation and signing for security
+- Distributed storage with replication and backup
+- Monitoring and alerting for all plugin operations
+
+### Plugin Development Mode
+- Plugin SDK with container abstractions
+- Plugin testing framework with mock containers
+- Plugin performance profiling and optimization tools
+- Plugin compatibility validation across container versions
+
+- **Complex Logic - Multi-IDE MCP Request Processing**:
+  ```
+  function processRequest(mcpRequest, ideType) -> MCPResponse | MCPError:
+    // Validate MCP protocol compliance
+    validation = validate_mcp_request(mcpRequest, ideType)
+    if validation.failed:
+      return MCPError.PROTOCOL_VIOLATION(validation.errors)
+    
+    // Extract session and routing information with IDE context
+    session = extract_session_info(mcpRequest, ideType)
+    ide_context = create_ide_context(ideType, session)
+    routing = determine_routing(mcpRequest.type, mcpRequest.payload, ide_context)
+    
+    // Route to flow coordinator with IDE context
+    flow_result = flow_coordinator.route_mcp_request(routing, session, ide_context)
+    
+    if flow_result.failed:
+      return MCPError.PROCESSING_FAILED(flow_result.error)
+    
+    // Format according to MCP specification with IDE-specific formatting
+    mcp_response = format_mcp_response(flow_result.data, flow_result.errors, ideType)
+    
+    return MCPResponse.SUCCESS(mcp_response)
+  ```
+
+- **Error Conditions**:
+  - `PROTOCOL_VIOLATION`: Request doesn't conform to MCP specification for specified IDE
+  - `INVALID_SESSION`: IDE session not found or expired (VS Code or Cursor)
+  - `UNSUPPORTED_IDE`: IDE type not supported by current implementation
+  - `ROUTING_FAILED`: Cannot determine appropriate handler for request
+  - `PROCESSING_FAILED`: Flow coordinator unable to process request
+
+- **Behavioral Properties**:
+  - **Multi-IDE Support**: Unified protocol handling for VS Code and Cursor environments
+  - **IDE-Specific Formatting**: Response formatting adapted to each IDE's requirements
+  - **Cross-IDE Session Management**: Session continuity across different IDE environments
+  - **Protocol Compliance**: Strict adherence to MCP specification for interoperability
+  - **Error Isolation**: Protocol errors do not propagate to other system components
+- **Performance Requirements**:
+  - Protocol processing: < 10ms per request (both IDEs)
+  - Session lookup: < 5ms per operation
+  - Concurrent sessions: Support 100+ active sessions across both IDEs
+  - Memory usage: < 75MB for protocol layer operations (increased for multi-IDE support)
+- **Quality Attributes**:
+  - **Reliability**: 99.9% successful request processing across both IDE environments
+  - **Consistency**: Deterministic response formatting for each IDE type
+  - **Scalability**: Linear performance scaling with concurrent requests across IDEs
+  - **Security**: Input validation and sanitization for all MCP messages from both IDEs
+
+- **Chain Coordination Properties**:
+-  - **Sequential Execution**: Tools execute in dependency order with context passing
+-  - **Shared Context**: Unified context object accumulates results through chain
+-  - **Error Recovery**: Partial chain execution with graceful failure handling
+-  - **Result Integration**: Each tool's output enhances context for subsequent tools
+- **Performance Requirements**:
+-  - Single tool execution: < 2 seconds per tool call
+-  - Tool chain execution: < 10 seconds for typical 5-tool chains
+-  - Result integration: < 100ms processing overhead per tool
+-  - Concurrent execution: Support 10+ simultaneous tool operations
+- **Quality Attributes**:
+-  - **Security**: Complete isolation preventing unauthorized system access
+-  - **Reliability**: 99%+ successful tool execution for valid calls
+-  - **Chain Consistency**: Tool chains produce deterministic results for identical inputs
+-  - **Extensibility**: New tools added without system modification
+
+### LLM Interface
+- **Purpose**: Manage communication with local LLM and inference optimization
+- **Interface Requirements**:
+-  - `processInference(contextPrompt: ContextPrompt, parameters: InferenceParameters) -> LLMResponse | InferenceError`
+-  - `manageModel(modelId: ModelId, operation: ModelOperation) -> ModelState | ModelError`
+-  - `optimizeParameters(context: ContextBundle, requirements: InferenceRequirements) -> OptimizedParameters | OptimizationError`
+-  - `monitorPerformance(metrics: PerformanceMetrics) -> PerformanceData`
+-  - `validateResponse(response: LLMResponse, context: ContextBundle) -> ValidationResult | ValidationError`
+
+- **Error Conditions**:
+-  - `MODEL_UNAVAILABLE`: Requested LLM model cannot be loaded or accessed
+-  - `INFERENCE_TIMEOUT`: LLM inference exceeded maximum allowed time
+-  - `PARAMETER_OPTIMIZATION_FAILED`: Cannot optimize parameters for given context
+-  - `RESPONSE_VALIDATION_FAILED`: LLM response doesn't meet quality criteria
+
+- **Behavioral Properties**:
+-  - **Model Abstraction**: Uniform interface regardless of underlying model
+-  - **Performance Optimization**: Dynamic parameter adjustment for optimal results
+-  - **Resource Management**: Efficient use of GPU/CPU resources across requests
+-  - **Quality Assurance**: Response validation and quality scoring
+- **Performance Requirements**:
+-  - Inference latency: < 2 seconds for typical queries
+-  - Model switching: < 30 seconds for model changes
+-  - GPU utilization: > 80% efficiency when GPU available
+-  - Memory management: Dynamic allocation based on model requirements
+- **Quality Attributes**:
+-  - **Consistency**: Reproducible results for identical context and parameters
+-  - **Availability**: 99.9% uptime for inference services
+-  - **Scalability**: Support multiple concurrent inference requests
+-  - **Adaptability**: Performance optimization based on usage patterns
+
+### Conversation Store (Refined Scope)
+- **Purpose**: Persistent storage for conversation history and interaction patterns only
+- **Interface Requirements**:
+-  - `storeConversation(sessionId: SessionId, interaction: Interaction, metadata: InteractionMetadata) -> StoreResult | StoreError`
+-  - `retrieveHistory(sessionId: SessionId, filters: HistoryFilters, limit: Integer) -> ConversationHistory | RetrievalError`
+-  - `storeUserPreferences(userId: UserId, preferences: UserPreferences) -> StoreResult | StoreError`
+-  - `queryPatterns(userId: UserId, patternType: PatternType, timeframe: TimeRange) -> PatternData | QueryError`
+-  - `maintainIntegrity(backupSchedule: BackupSchedule, retentionPolicy: RetentionPolicy) -> MaintenanceStatus`
+
+- **Error Conditions**:
+-  - `STORAGE_FULL`: Insufficient storage space for conversation data
+-  - `CORRUPTION_DETECTED`: Data integrity violation detected
+-  - `BACKUP_FAILED`: Scheduled backup operation failed
+-  - `RETENTION_POLICY_VIOLATION`: Data retention policy cannot be enforced
+
+- **Storage Boundary**: 
+-  - **Includes**: Conversation logs, user preferences, interaction success patterns, session metadata
+-  - **Excludes**: Document content, embeddings, temporary session state, file system data
+- **Performance Requirements**:
+-  - Write operations: < 50ms per conversation storage
+-  - Read operations: < 100ms for history retrieval
+-  - Storage capacity: Support 1M+ conversations with efficient indexing
+-  - Backup operations: Daily automated backups with < 5 minute recovery time
+- **Quality Attributes**:
+-  - **Durability**: Zero data loss with proper replication and backup
+-  - **Consistency**: All reads reflect most recent committed writes
+-  - **Availability**: 99.9% uptime with automated failover
+-  - **Scalability**: Linear performance scaling with data volume
+
+### Document Index (RAG-Powered with ChromaDB)
+- **Purpose**: RAG-powered semantic search and document understanding using ChromaDB vector database
+- **RAG Framework Integration**:
+-  - **LlamaIndex**: Document processing, chunking, and indexing pipeline
+-  - **sentence-transformers**: Vector embedding generation using 'all-MiniLM-L6-v2' model
+-  - **ChromaDB**: Vector storage and similarity-based retrieval
+- **Interface Requirements**:
+-  - `indexDocument(content: DocumentContent, metadata: DocumentMetadata) -> DocumentId | IndexError`
+-  - `semanticSearch(query: SearchQuery, filters: SearchFilters, limit: Integer) -> RankedResults | SearchError`
+-  - `generateEmbedding(text: String, model: EmbeddingModel) -> EmbeddingVector | EmbeddingError`
+-  - `vectorSearch(queryEmbedding: EmbeddingVector, topK: Integer, threshold: Float) -> DocumentList | SearchError`
+-  - `updateEmbeddings(documentId: DocumentId, newContent: DocumentContent) -> UpdateResult | UpdateError`
+-  - `queryKnowledgeGraph(entities: EntityList, relationships: RelationshipList) -> GraphResult | GraphError`
+-  - `indexToolResults(toolOutput: ToolOutput, context: IndexingContext) -> IndexResult | IndexError`
+-  - `optimizeIndex(parameters: OptimizationParameters) -> OptimizationResult`
+
+- **Error Conditions**:
+-  - `EMBEDDING_GENERATION_FAILED`: sentence-transformers cannot generate embeddings for content
+-  - `VECTOR_SEARCH_FAILED`: ChromaDB vector search operation failed
 **CLI Interface**
 - **Primary Function**: Handle CLI application requests and local LLM integration for Objective 1
 - **Key Capabilities**: Direct API communication, local LLM optimization, CLI-specific context formatting
@@ -123,12 +537,16 @@ graph TB
   - Handle error isolation and recovery
 
 **Context Engine** 
-- **Primary Function**: Intelligent context assembly and conversation management
-- **Key Capabilities**: Multi-source context gathering, relevance scoring, token optimization, pattern learning
-- **Interaction Points**: Orchestrates context from conversation history and document sources
+- **Primary Function**: RAG-powered intelligent context assembly and conversation management
+- **Key Capabilities**: LlamaIndex RAG pipeline, vector embeddings (sentence-transformers), ChromaDB search, relevance scoring, token optimization, pattern learning
+- **RAG Integration**: 
+  - **Document Retrieval**: LlamaIndex framework for structured document processing
+  - **Vector Embeddings**: sentence-transformers for semantic understanding  
+  - **Vector Search**: ChromaDB for similarity-based document retrieval
+- **Interaction Points**: Orchestrates RAG retrieval, conversation history, and workspace analysis
 - **Storage Boundaries**: 
-  - **Reads**: Conversation Store (history), Document Index (semantic search)
-  - **Writes**: Conversation Store (new interactions), Session State (context metadata)
+  - **Reads**: Conversation Store (history), Document Index (ChromaDB vector search)
+  - **Writes**: Conversation Store (new interactions), Session State (context metadata), Document Index (embeddings)
 
 **Tool Executor**
 - **Primary Function**: Secure tool execution with chain coordination capabilities
@@ -178,13 +596,13 @@ graph TB
 - **Session Expiration**: Time-based invalidation with configurable policies
 
 **Interface Contract**:
-```typescript
-interface SessionState {
-    cacheSessionData(sessionId: SessionId, data: SessionData, ttl: TimeToLive) -> CacheResult
-    retrieveSessionData(sessionId: SessionId, keys: DataKeys) -> SessionData | RetrievalError
-    trackFlowState(sessionId: SessionId, flowContext: FlowContext) -> TrackingResult
-    collectPerformanceData(sessionId: SessionId, metrics: PerformanceMetrics) -> CollectionResult
-}
+```
+SessionState Operations:
+  - cacheSessionData(sessionId: SessionId, data: SessionData, ttl: TimeToLive) → CacheResult
+  - retrieveSessionData(sessionId: SessionId, keys: DataKeys) → SessionData | RetrievalError
+  - trackFlowState(sessionId: SessionId, flowContext: FlowContext) → TrackingResult
+  - collectPerformanceData(sessionId: SessionId, metrics: PerformanceMetrics) → CollectionResult
+```
 ```
 
 **Inclusion/Exclusion Boundaries**:
@@ -766,24 +1184,32 @@ graph TB
   - **Availability**: 99.9% uptime with automated failover
   - **Scalability**: Linear performance scaling with data volume
 
-### Document Index (Refined Scope)
-- **Purpose**: Semantic search and document understanding only
+### Document Index (RAG-Powered with ChromaDB)
+- **Purpose**: RAG-powered semantic search and document understanding using ChromaDB vector database
+- **RAG Framework Integration**:
+  - **LlamaIndex**: Document processing, chunking, and indexing pipeline
+  - **sentence-transformers**: Vector embedding generation using 'all-MiniLM-L6-v2' model
+  - **ChromaDB**: Vector storage and similarity-based retrieval
 - **Interface Requirements**:
   - `indexDocument(content: DocumentContent, metadata: DocumentMetadata) -> DocumentId | IndexError`
   - `semanticSearch(query: SearchQuery, filters: SearchFilters, limit: Integer) -> RankedResults | SearchError`
+  - `generateEmbedding(text: String, model: EmbeddingModel) -> EmbeddingVector | EmbeddingError`
+  - `vectorSearch(queryEmbedding: EmbeddingVector, topK: Integer, threshold: Float) -> DocumentList | SearchError`
   - `updateEmbeddings(documentId: DocumentId, newContent: DocumentContent) -> UpdateResult | UpdateError`
   - `queryKnowledgeGraph(entities: EntityList, relationships: RelationshipList) -> GraphResult | GraphError`
   - `indexToolResults(toolOutput: ToolOutput, context: IndexingContext) -> IndexResult | IndexError`
   - `optimizeIndex(parameters: OptimizationParameters) -> OptimizationResult`
 
 - **Error Conditions**:
-  - `EMBEDDING_GENERATION_FAILED`: Cannot generate embeddings for document content
-  - `INDEX_CORRUPTION`: Search index integrity compromised
+  - `EMBEDDING_GENERATION_FAILED`: sentence-transformers cannot generate embeddings for content
+  - `VECTOR_SEARCH_FAILED`: ChromaDB vector search operation failed
+  - `LLAMAINDEX_PROCESSING_FAILED`: LlamaIndex document processing pipeline failed
+  - `INDEX_CORRUPTION`: ChromaDB index integrity compromised
   - `SEARCH_TIMEOUT`: Semantic search exceeded maximum allowed time
   - `OPTIMIZATION_FAILED`: Index optimization process failed
 
 - **Storage Boundary**:
-  - **Includes**: Document embeddings, semantic indexes, file metadata, tool result indexes, knowledge graphs
+  - **Includes**: Vector embeddings (ChromaDB), semantic indexes, LlamaIndex document chunks, file metadata, tool result indexes, knowledge graphs
   - **Excludes**: Conversation history, user preferences, active session state
 - **Performance Requirements**:
   - Search latency: < 500ms for queries across 1M+ documents

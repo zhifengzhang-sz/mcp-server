@@ -1,430 +1,226 @@
-# C3: Component Diagrams - Phase 1 Design
+# C3: Component Design - Plugin-Ready Architecture
 
-> Detailed Component Design  
-> Part of: [Phase 1 Design](phase.1.md)  
-> Previous: [C2: Container Diagram](container.phase.1.md)  
-> Date: June 17, 2025
+> **Functional Component Design with Plugin Extension Points**  
+> **Part of**: [Phase 1 Design](phase.1.md)  
+> **Previous**: [C2: Container Design](container.phase.1.md)  
+> **Architecture**: Functional programming patterns + Plugin composition
 
-## Interface Layer Components
+## Plugin Registry System Components
 
-### CLI Interface Container Components
+### Core Plugin Registry Components
 
 ```mermaid
 graph TB
-    %% CLI Interface Container
-    subgraph CLIContainer["📱 CLI Interface Container"]
-        CLIRequestHandler[📱 CLI Request Handler<br/>Request Processing]
-        CLIResponseFormatter[📄 CLI Response Formatter<br/>Response Processing]
-        CLISessionManager[👤 CLI Session Manager<br/>Session Lifecycle]
-        LocalLLMOptimizer[⚡ Local LLM Optimizer<br/>Parameter Optimization]
-        CLIContextOptimizer[🎯 CLI Context Optimizer<br/>Context Adaptation]
+    %% Core Plugin Registry System
+    subgraph PluginRegistryContainer["🔌 Plugin Registry Container"]
+        direction TB
+        PluginManager[🔌 Plugin Manager<br/>Lifecycle Management]
+        InterfaceValidator[🔍 Interface Validator<br/>Contract Validation]
+        DependencyResolver[🔗 Dependency Resolver<br/>Plugin Dependencies]
+        CompositionEngine[⚡ Composition Engine<br/>Functional Composition]
+        PluginMetadataStore[📋 Plugin Metadata Store<br/>Plugin Information]
+    end
+    
+    %% Plugin Interface Components
+    subgraph PluginInterfaces["🔗 Plugin Interface Components"]
+        direction TB
+        PluginInterface[🔌 Plugin Interface<br/>Core Plugin Contract]
+        ContextAdapter[📚 Context Adapter<br/>Context Enhancement]
+        ToolAdapter[🛠️ Tool Adapter<br/>Tool Enhancement]
+        EventHandler[📝 Event Handler<br/>Event Processing]
+        RequestProcessor[⚡ Request Processor<br/>Request Enhancement]
+        ResponseEnhancer[📋 Response Enhancer<br/>Response Enhancement]
+    end
+    
+    %% Future Plugin Extensions
+    subgraph FuturePlugins["🔌 Future Plugin Extensions"]
+        direction LR
+        RAGContextAdapter[📚 RAG Context Adapter<br/>Phase 2 Extension]
+        AgentCoordinator[🤖 Agent Coordinator<br/>Phase 3 Extension]
+        AutonomyController[🧠 Autonomy Controller<br/>Phase 4 Extension]
     end
     
     %% External Systems
-    CLIApp[💻 CLI Application<br/>Command Line Interface]
-    FlowCoordinator[⚡ Flow Coordinator Container<br/>Request Orchestration]
-    LocalLLM[🧠 Local LLM Service<br/>Ollama/Inference Engine]
-    SessionState[⚡ Session State Container<br/>Active Cache]
+    PluginOrchestrator[⚡ Plugin Orchestrator Container<br/>Execution Coordination]
+    FunctionalContextEngine[🔍 Functional Context Engine<br/>Context Assembly]
+    FunctionalToolRegistry[🛠️ Functional Tool Registry<br/>Tool Management]
+    
+    %% Plugin Management Flow
+    PluginManager -->|"Interface validation"| InterfaceValidator
+    InterfaceValidator -->|"Valid plugins"| DependencyResolver
+    DependencyResolver -->|"Resolved dependencies"| CompositionEngine
+    CompositionEngine -->|"Plugin chains"| PluginOrchestrator
+    PluginManager -->|"Store metadata"| PluginMetadataStore
+    
+    %% Plugin Interface Registration
+    PluginInterface -->|"Register"| PluginManager
+    ContextAdapter -->|"Register"| PluginManager
+    ToolAdapter -->|"Register"| PluginManager
+    EventHandler -->|"Register"| PluginManager
+    RequestProcessor -->|"Register"| PluginManager
+    ResponseEnhancer -->|"Register"| PluginManager
+    
+    %% Future Plugin Registration (Dashed for Future)
+    RAGContextAdapter -.->|"Phase 2 Registration"| PluginManager
+    AgentCoordinator -.->|"Phase 3 Registration"| PluginManager
+    AutonomyController -.->|"Phase 4 Registration"| PluginManager
+    
+    %% Plugin Application Points
+    CompositionEngine -->|"Context adapters"| FunctionalContextEngine
+    CompositionEngine -->|"Tool adapters"| FunctionalToolRegistry
+    
+    %% Styling
+    style PluginManager fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style InterfaceValidator fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style DependencyResolver fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style CompositionEngine fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style PluginMetadataStore fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    style PluginInterface fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ContextAdapter fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ToolAdapter fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style EventHandler fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style RequestProcessor fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ResponseEnhancer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    style RAGContextAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AgentCoordinator fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AutonomyController fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+#### Plugin Manager Component
+
+**Interface Contract**:
+```
+PluginManager Operations:
+  - registerPlugin(plugin: Plugin) → RegistrationResult
+  - unregisterPlugin(pluginId: PluginId) → UnregistrationResult
+  - discoverPlugins(criteria: DiscoveryCriteria) → Plugin[]
+  - getPluginMetadata(pluginId: PluginId) → PluginMetadata
+  - validatePlugin(plugin: Plugin) → ValidationResult
+```
+
+**Functional Implementation Pattern**:
+```
+Plugin Registration Pattern:
+  registerPlugin(plugin, registry) = 
+    validation ← validatePluginInterface(plugin)
+    dependencies ← resolveDependencies(plugin, registry) 
+    addPlugin(plugin, registry)
+
+Plugin Discovery Pattern:
+  discoverPlugins(criteria, registry) = 
+    filter(matchesCriteria(criteria), getAllPlugins(registry))
+```
+
+#### Composition Engine Component
+
+**Interface Contract**:
+```
+CompositionEngine Operations:
+  - composePluginChain(plugins: Plugin[]) → PluginChain
+    - composeAdapters(adapters: Adapter[]) → CompositeAdapter
+  - executeChain(chain: PluginChain, request: MCPRequest) → MCPResponse
+  - optimizeComposition(chain: PluginChain) → OptimizedChain
+```
+
+**Functional Composition Patterns**:
+```
+Plugin Chain Composition:
+  composePluginChain(plugins) = 
+    fold(composePlugin, emptyChain, plugins)
+
+Context Adapter Composition:
+  composeContextAdapters(adapters, context) = 
+    fold(applyAdapter, context, adapters)
+  applyAdapter(currentContext, adapter) = adapter.adapt(currentContext)
+
+Tool Adapter Composition:
+  composeToolAdapters(adapters, tool) = 
+    fold(applyEnhancement, tool, adapters)
+  applyEnhancement(currentTool, adapter) = adapter.enhance(currentTool)
+```
+
+## Functional Context Engine Components
+
+### Context Assembly Components with Plugin Extension Points
+
+```mermaid
+graph TB
+    %% Functional Context Engine Container
+    subgraph ContextEngineContainer["🔍 Functional Context Engine Container"]
+        direction TB
+        ContextAssembler[📚 Context Assembler<br/>Immutable Assembly]
+        ContextOptimizer[⚡ Context Optimizer<br/>Token Optimization]
+        ContextComposer[🔗 Context Composer<br/>Functional Composition]
+        ContextCache[💾 Context Cache<br/>Immutable Caching]
+        PluginAdapterChain[🔌 Plugin Adapter Chain<br/>Context Enhancement]
+    end
+    
+    %% Context Sources
+    subgraph ContextSources["📋 Context Sources"]
+        direction TB
+        ConversationHistory[💬 Conversation History<br/>Past Interactions]
+        WorkspaceAnalyzer[🗂️ Workspace Analyzer<br/>Project Structure]
+        FileContextProvider[📄 File Context Provider<br/>File Content Analysis]
+        GitContextProvider[🔄 Git Context Provider<br/>Version Control State]
+        SystemContextProvider[⚙️ System Context Provider<br/>Environment Info]
+    end
+    
+    %% Plugin Adapter Types
+    subgraph ContextAdapterTypes["🔌 Context Adapter Types"]
+        direction TB
+        BaseContextAdapter[📚 Base Context Adapter<br/>Core Enhancement]
+        RAGContextAdapter[📚 RAG Context Adapter<br/>Phase 2: Semantic]
+        AgentContextAdapter[🤖 Agent Context Adapter<br/>Phase 3: Agent State]
+        AutonomyContextAdapter[🧠 Autonomy Context Adapter<br/>Phase 4: Goals]
+    end
     
     %% External Connections
-    CLIApp <==>|"Direct API calls"| CLIRequestHandler
-    CLIRequestHandler <==>|"Route CLI requests"| FlowCoordinator
-    CLIResponseFormatter <==>|"Optimized responses"| CLIApp
-    LocalLLMOptimizer <==>|"Inference requests"| LocalLLM
-    CLISessionManager <==>|"Session data"| SessionState
+    PluginRegistry[🔌 Plugin Registry<br/>Adapter Registration]
+    EventStore[📝 Event Store<br/>Context Events]
     
-    %% Internal Component Flow
-    CLIRequestHandler -->|"Parsed requests"| CLIContextOptimizer
-    CLIContextOptimizer -->|"Optimized context"| CLIRequestHandler
-    CLISessionManager -->|"Session context"| CLIRequestHandler
-    CLIRequestHandler -->|"LLM parameters"| LocalLLMOptimizer
-    FlowCoordinator -->|"Flow results"| CLIResponseFormatter
-    CLIResponseFormatter -->|"CLI formatting"| CLIRequestHandler
+    %% Context Assembly Flow
+    ContextAssembler -->|"Gather from sources"| ConversationHistory
+    ContextAssembler -->|"Gather from sources"| WorkspaceAnalyzer
+    ContextAssembler -->|"Gather from sources"| FileContextProvider
+    ContextAssembler -->|"Gather from sources"| GitContextProvider
+    ContextAssembler -->|"Gather from sources"| SystemContextProvider
     
-    %% Styling
-    style CLIRequestHandler fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style CLIResponseFormatter fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style CLISessionManager fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style LocalLLMOptimizer fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style CLIContextOptimizer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    %% Plugin Enhancement Flow
+    ContextAssembler -->|"Base context"| PluginAdapterChain
+    PluginRegistry -->|"Registered adapters"| PluginAdapterChain
+    PluginAdapterChain -->|"Enhanced context"| ContextComposer
+    ContextComposer -->|"Optimizable context"| ContextOptimizer
+    ContextOptimizer -->|"Optimized context"| ContextCache
     
-    style CLIApp fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    style FlowCoordinator fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style LocalLLM fill:#f3e5f5,stroke:#4a148c,stroke-width:3px
-    style SessionState fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-```
-
-#### CLI Request Handler Component
-
-**Interface Contract**:
-```
-CLIRequestHandler Operations:
-    processCliRequest(query: String, sessionId: SessionId, context: ContextBundle) -> CliResponse | CliError
-    validateCliInput(input: CliInput) -> ValidationResult | ValidationError
-    extractSessionInfo(request: CliRequest) -> SessionInfo | ExtractionError
-    routeToFlowCoordinator(request: ProcessedRequest, session: SessionInfo) -> RoutingResult | RoutingError
-    handleFlowResponse(flowResult: FlowResult, session: SessionInfo) -> CliResponse | ProcessingError
-```
-
-**Complex Logic - CLI Request Processing**:
-```
-function processCliRequest(query, sessionId, context) -> CliResponse | CliError:
-  // Validate CLI input format and constraints
-  validation = validate_cli_input(query, sessionId, context)
-  if validation.failed:
-    return CliError.INVALID_INPUT(validation.errors)
-  
-  // Get or create CLI session
-  session = cli_session_manager.get_or_create_session(sessionId)
-  if session.invalid:
-    return CliError.SESSION_ERROR(session.error)
-  
-  // Optimize context for CLI usage patterns
-  optimized_context = cli_context_optimizer.optimize_for_cli(context, session.preferences)
-  
-  // Create processing request for flow coordinator
-  processing_request = create_processing_request(query, optimized_context, session)
-  
-  // Route to flow coordinator for orchestrated processing
-  flow_result = flow_coordinator.route_cli_request(processing_request)
-  if flow_result.failed:
-    return CliError.PROCESSING_FAILED(flow_result.error)
-  
-  // Handle successful flow result
-  cli_response = handle_flow_response(flow_result, session)
-  
-  // Update session with interaction
-  cli_session_manager.update_session(session, query, cli_response)
-  
-  return CliResponse.SUCCESS(cli_response)
-```
-
-**Error Conditions**:
-- `INVALID_INPUT`: CLI input doesn't meet format or constraint requirements
-- `SESSION_ERROR`: CLI session creation or validation failed
-- `CONTEXT_OPTIMIZATION_FAILED`: Cannot optimize context for CLI usage
-- `PROCESSING_FAILED`: Flow coordinator unable to process CLI request
-
-**Performance Requirements**:
-- Request processing: < 50ms for CLI request handling
-- Input validation: < 10ms per input validation
-- Session operations: < 15ms for session management
-- Flow coordination: < 20ms for routing to flow coordinator
-
-#### CLI Context Optimizer Component
-
-**Interface Contract**:
-```
-CLIContextOptimizer Operations:
-    optimizeForCli(context: ContextBundle, preferences: UserPreferences) -> OptimizedContext | OptimizationError
-    adaptContextFormat(context: ContextBundle, cliFormat: CliFormat) -> AdaptedContext
-    prioritizeCliRelevance(context: ContextBundle, query: String) -> PrioritizedContext
-    enforceCliConstraints(context: ContextBundle, constraints: CliConstraints) -> ConstrainedContext
-```
-
-**Behavioral Specifications**:
-- **CLI-Specific Optimization**: Adapt context presentation for command-line consumption
-- **Format Adaptation**: Convert context to CLI-friendly formats (plain text, structured output)
-- **Relevance Prioritization**: Prioritize context elements most relevant to CLI interactions
-- **Constraint Enforcement**: Ensure context meets CLI-specific constraints (length, formatting)
-
-### MCP Protocol Container Components
-
-```mermaid
-graph TB
-    %% MCP Protocol Container
-    subgraph MCPContainer["📡 MCP Protocol Container"]
-        ProtocolHandler[📡 Protocol Handler<br/>Message Processing]
-        MCPSessionManager[👤 MCP Session Manager<br/>IDE Sessions (VS Code & Cursor)]
-        RequestRouter[🎯 Request Router<br/>Message Routing]
-        ResponseFormatter[📄 Response Formatter<br/>MCP Responses]
-        ErrorHandler[⚠️ Error Handler<br/>Error Management]
-        ProtocolValidator[🔐 Protocol Validator<br/>MCP Compliance]
-    end
+    %% Adapter Chain Application
+    BaseContextAdapter -->|"Core enhancement"| PluginAdapterChain
+    RAGContextAdapter -.->|"Phase 2 enhancement"| PluginAdapterChain
+    AgentContextAdapter -.->|"Phase 3 enhancement"| PluginAdapterChain
+    AutonomyContextAdapter -.->|"Phase 4 enhancement"| PluginAdapterChain
     
-    %% External Systems
-    VSCode[🔧 VS Code + Extensions<br/>IDE Environment]
-    Cursor[🖱️ Cursor + AI Chat<br/>IDE Environment]
-    FlowCoordinator[⚡ Flow Coordinator Container<br/>Request Orchestration]
-    SessionState[⚡ Session State Container<br/>Active Cache]
-    
-    %% External Connections
-    VSCode <==>|"MCP Protocol (JSON-RPC)"| ProtocolHandler
-    Cursor <==>|"MCP Protocol (JSON-RPC)"| ProtocolHandler
-    RequestRouter <==>|"Route MCP requests"| FlowCoordinator
-    MCPSessionManager <==>|"Session state"| SessionState
-    
-    %% Internal Component Flow
-    ProtocolHandler -->|"Parsed requests"| ProtocolValidator
-    ProtocolValidator -->|"Valid requests"| RequestRouter
-    ProtocolHandler -->|"Session validation"| MCPSessionManager
-    RequestRouter -->|"Routing decisions"| FlowCoordinator
-    FlowCoordinator -->|"Response data"| ResponseFormatter
-    ResponseFormatter -->|"MCP responses"| ProtocolHandler
-    ErrorHandler -->|"Error responses"| ResponseFormatter
+    %% Event Recording
+    ContextAssembler -->|"Assembly events"| EventStore
+    ContextOptimizer -->|"Optimization events"| EventStore
     
     %% Styling
-    style ProtocolHandler fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style MCPSessionManager fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style RequestRouter fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style ResponseFormatter fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style ErrorHandler fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style ProtocolValidator fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    style ContextAssembler fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ContextOptimizer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ContextComposer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ContextCache fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style PluginAdapterChain fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
     
-    style VSCode fill:#007acc,stroke:#ffffff,stroke-width:2px
-    style Cursor fill:#000000,stroke:#ffffff,stroke-width:2px
-    style FlowCoordinator fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style SessionState fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-```
-
-#### Protocol Handler Component
-
-**Interface Contract**:
-```
-ProtocolHandler Operations:
-    processRequest(mcpRequest: MCPRequest) -> MCPResponse | MCPError
-    validateMessage(message: MCPMessage) -> ValidationResult | ValidationError
-    parseRequest(rawMessage: Bytes) -> ParsedRequest | ParseError
-    serializeResponse(response: ResponseData) -> MCPMessage | SerializationError
-    handleTransport(connection: Connection) -> TransportSession | TransportError
-```
-
-**Complex Logic - MCP Request Processing**:
-```
-function processRequest(mcpRequest) -> MCPResponse | MCPError:
-  // Validate MCP protocol compliance
-  validation = protocol_validator.validate_mcp_request(mcpRequest)
-  if validation.failed:
-    return MCPError.PROTOCOL_VIOLATION(validation.errors)
-  
-  // Extract and validate session information
-  session_info = extract_session_info(mcpRequest)
-  session = mcp_session_manager.validate_session(session_info.sessionId)
-  if session.invalid:
-    return MCPError.INVALID_SESSION(session.error)
-  
-  // Route request through request router
-  routing_decision = request_router.route_request(mcpRequest, session)
-  if routing_decision.failed:
-    return MCPError.ROUTING_FAILED(routing_decision.error)
-  
-  // Send to flow coordinator for processing
-  flow_result = flow_coordinator.route_mcp_request(routing_decision, session)
-  if flow_result.failed:
-    return MCPError.PROCESSING_FAILED(flow_result.error)
-  
-  // Format response according to MCP specification
-  mcp_response = response_formatter.format_mcp_response(flow_result.data, flow_result.errors)
-  
-  return MCPResponse.SUCCESS(mcp_response)
-```
-
-## Core Processing Layer Components
-
-### Flow Coordinator Container Components
-
-```mermaid
-graph TB
-    %% Flow Coordinator Container
-    subgraph FlowContainer["⚡ Flow Coordinator Container"]
-        RequestRouter[🎯 Request Router<br/>Request Analysis]
-        FlowOrchestrator[⚙️ Flow Orchestrator<br/>Execution Coordination]
-        SessionStateCoordinator[🔄 Session State Coordinator<br/>State Management]
-        ErrorIsolationManager[⚠️ Error Isolation Manager<br/>Error Handling]
-        ContainerProxy[🔗 Container Proxy<br/>Container Communication]
-        ProcessingPlanBuilder[📋 Processing Plan Builder<br/>Plan Generation]
-    end
+    style ConversationHistory fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style WorkspaceAnalyzer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style FileContextProvider fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style GitContextProvider fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style SystemContextProvider fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
     
-    %% External Containers
-    CLIInterface[📱 CLI Interface Container<br/>Command Line Processing]
-    MCPProtocol[📡 MCP Protocol Container<br/>IDE Communication (VS Code & Cursor)]
-    ContextEngine[🔍 Context Engine Container<br/>Intelligent Context Assembly]
-    ToolExecutor[🛠️ Tool Executor Container<br/>Workspace Operations]
-    LLMInterface[🎯 LLM Interface Container<br/>Model Communication]
-    SessionState[⚡ Session State Container<br/>Active Cache]
-    
-    %% Request Routing from Interfaces
-    CLIInterface <==>|"CLI requests"| RequestRouter
-    MCPProtocol <==>|"MCP requests"| RequestRouter
-    
-    %% Flow Orchestration
-    RequestRouter -->|"Processing plans"| ProcessingPlanBuilder
-    ProcessingPlanBuilder -->|"Execution plans"| FlowOrchestrator
-    FlowOrchestrator -->|"Container operations"| ContainerProxy
-    
-    %% Container Coordination
-    ContainerProxy <==>|"Context requests"| ContextEngine
-    ContainerProxy <==>|"Tool execution"| ToolExecutor
-    ContainerProxy <==>|"LLM inference"| LLMInterface
-    
-    %% Session and Error Management
-    SessionStateCoordinator <==>|"Session coordination"| SessionState
-    ErrorIsolationManager -->|"Error handling"| FlowOrchestrator
-    FlowOrchestrator -->|"State updates"| SessionStateCoordinator
-    
-    %% Styling
-    style RequestRouter fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style FlowOrchestrator fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style SessionStateCoordinator fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style ErrorIsolationManager fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style ContainerProxy fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style ProcessingPlanBuilder fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    
-    style CLIInterface fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style MCPProtocol fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style ContextEngine fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style ToolExecutor fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
-    style LLMInterface fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    style SessionState fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-```
-
-#### Request Router Component
-
-**Interface Contract**:
-```
-RequestRouter Operations:
-    routeRequest(source: RequestSource, requestType: RequestType, payload: RequestPayload) -> ProcessingPlan | RoutingError
-    analyzeRequestRequirements(requestType: RequestType, payload: RequestPayload) -> RequirementAnalysis
-    buildProcessingPlan(requirements: RequirementAnalysis) -> ProcessingPlan | PlanError
-    validateProcessingPlan(plan: ProcessingPlan, requirements: RequirementAnalysis) -> ValidationResult
-    optimizeRouting(patterns: RequestPatterns) -> RoutingOptimization
-```
-
-**Complex Logic - Request Routing**:
-```
-function routeRequest(source, requestType, payload) -> ProcessingPlan | RoutingError:
-  // Analyze request requirements
-  requirements = analyze_request_requirements(requestType, payload)
-  if requirements.invalid:
-    return RoutingError.INVALID_REQUIREMENTS(requirements.errors)
-  
-  // Build processing plan based on requirements
-  plan = processing_plan_builder.build_plan(requirements, source)
-  if plan.failed:
-    return RoutingError.PLAN_GENERATION_FAILED(plan.error)
-  
-  // Validate plan feasibility with current system state
-  validation = validate_processing_plan(plan, requirements)
-  if validation.failed:
-    return RoutingError.INVALID_PLAN(validation.errors)
-  
-  // Optimize plan based on historical patterns
-  optimized_plan = optimize_routing(plan, get_request_patterns())
-  
-  return ProcessingPlan.SUCCESS(optimized_plan)
-```
-
-#### Flow Orchestrator Component
-
-**Interface Contract**:
-```
-FlowOrchestrator Operations:
-    coordinateFlow(processingPlan: ProcessingPlan, context: FlowContext) -> FlowResult | FlowError
-    executeProcessingStep(step: ProcessingStep, flowContext: FlowContext) -> StepResult | StepError
-    handlePartialFailure(completedSteps: StepResult[], failedStep: StepError, context: FlowContext) -> PartialResult
-    finalizeFlowExecution(stepResults: StepResult[], flowContext: FlowContext) -> FinalResult
-    manageFlowState(flowId: FlowId, state: FlowState) -> StateResult
-```
-
-**Complex Logic - Flow Coordination**:
-```
-function coordinateFlow(processingPlan, context) -> FlowResult | FlowError:
-  // Initialize flow execution context
-  flow_context = initialize_flow_context(context, processingPlan)
-  flow_results = []
-  
-  try:
-    // Execute processing steps in sequence
-    for step in processingPlan.steps:
-      // Update session state for current step
-      session_state_coordinator.update_flow_state(flow_context.sessionId, step)
-      
-      // Execute step through container proxy
-      step_result = container_proxy.execute_step(step, flow_context)
-      
-      if step_result.failed:
-        // Handle partial failure with error isolation
-        return error_isolation_manager.handle_partial_failure(
-          flow_results, 
-          step_result.error, 
-          flow_context
-        )
-      
-      // Update flow context with step results
-      flow_context = merge_step_result(flow_context, step_result)
-      flow_results.append(step_result)
-      
-      // Check for early termination conditions
-      if should_terminate_flow(step_result, processingPlan):
-        break
-    
-    // Finalize flow execution
-    final_result = finalize_flow_execution(flow_results, flow_context)
-    
-    // Update session state with final results
-    session_state_coordinator.finalize_flow_state(
-      flow_context.sessionId, 
-      final_result
-    )
-    
-    return FlowResult.SUCCESS(final_result)
-    
-  catch ContainerError as e:
-    // Isolate container errors to prevent cascade failures
-    return error_isolation_manager.isolate_container_error(e, flow_context)
-```
-
-### Context Engine Container Components
-
-```mermaid
-graph TB
-    subgraph "Context Engine Container"
-        ContextAssembler[🎯 Context Assembler<br/>Orchestration]
-        ConversationManager[💬 Conversation Manager<br/>Dialogue History]
-        WorkspaceAnalyzer[📁 Workspace Analyzer<br/>Project Intelligence]
-        ContextOptimizer[⚡ Context Optimizer<br/>Token Management]
-        RelevanceScorer[🔍 Relevance Scorer<br/>Semantic Analysis]
-        MemoryManager[🧠 Memory Manager<br/>Learning System]
-    end
-    
-    subgraph "External Storage"
-        ConversationStore[(💬 Conversation Store)]
-        DocumentIndex[(📚 Document Index)]
-        SessionState[(⚡ Session State)]
-    end
-    
-    subgraph "External Containers"
-        FlowCoordinator[⚡ Flow Coordinator]
-        ToolExecutor[🛠️ Tool Executor]
-        LLMInterface[🎯 LLM Interface]
-    end
-    
-    %% Assembly orchestration
-    FlowCoordinator <==>|"Context requests"| ContextAssembler
-    ContextAssembler -->|"Get conversation"| ConversationManager
-    ContextAssembler -->|"Get workspace"| WorkspaceAnalyzer
-    ContextAssembler -->|"Score relevance"| RelevanceScorer
-    ContextAssembler -->|"Optimize tokens"| ContextOptimizer
-    
-    %% Storage interactions (refined boundaries)
-    ConversationManager <==>|"Conversations only"| ConversationStore
-    WorkspaceAnalyzer <==>|"Document search only"| DocumentIndex
-    RelevanceScorer <==>|"Embeddings only"| DocumentIndex
-    MemoryManager <==>|"Patterns only"| ConversationStore
-    ContextAssembler <==>|"Context metadata"| SessionState
-    
-    %% External container integration
-    ContextAssembler <==>|"Enhanced context"| LLMInterface
-    ToolExecutor -->|"Tool results"| ContextAssembler
-    
-    %% Styling
-    classDef context fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:1px
-    
-    class ContextAssembler,ConversationManager,WorkspaceAnalyzer,ContextOptimizer,RelevanceScorer,MemoryManager context
-    class ConversationStore,DocumentIndex,SessionState storage
-    class FlowCoordinator,ToolExecutor,LLMInterface external
+    style BaseContextAdapter fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style RAGContextAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AgentContextAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AutonomyContextAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 #### Context Assembler Component
@@ -432,469 +228,333 @@ graph TB
 **Interface Contract**:
 ```
 ContextAssembler Operations:
-    assembleContext(query: String, sessionId: SessionId, maxTokens: TokenLimit) -> ContextBundle | ContextError
-    prioritizeSources(sources: ContextSources, relevance: RelevanceScores) -> PrioritizedSources
-    validateContext(context: ContextBundle) -> ValidationResult | ValidationError
-    integrateToolResults(toolResults: ToolResults, context: ContextBundle) -> EnhancedContext | IntegrationError
-    optimizeAssembly(patterns: UsagePatterns) -> AssemblyOptimization
+  - assembleContext(query: Query, session: Session) → Context
+  - gatherFromSources(sources: ContextSource[]) → ContextData
+  - applyAdapterChain(adapters: ContextAdapter[], context: Context) → Context
+  - recordAssemblyEvent(assembly: ContextAssembly) → AssemblyEvent
+```
 ```
 
-**Complex Logic - Context Assembly**:
+**Functional Assembly Pattern**:
 ```
-function assembleContext(query, sessionId, maxTokens) -> ContextBundle | ContextError:
-  // Initialize context assembly with token budget
-  context_bundle = ContextBundle.new()
-  token_budget = TokenBudget.new(maxTokens)
-  
-  // Define context sources with priorities (aligned with container design)
-  sources = [
-    {source: conversation_manager, priority: HIGH, weight: 0.4},
-    {source: workspace_analyzer, priority: MEDIUM, weight: 0.3},
-    {source: document_index_search, priority: MEDIUM, weight: 0.2},
-    {source: external_knowledge, priority: LOW, weight: 0.1}
-  ]
-  
-  // Gather context from each source with budget allocation
-  for source_config in sources:
-    try:
-      // Allocate token budget for this source
-      source_tokens = token_budget.allocate(source_config.weight)
-      
-      // Gather context from source
-      source_context = source_config.source.gather_context(
-        query, 
-        sessionId, 
-        source_tokens
-      )
-      
-      // Score relevance using relevance scorer
-      relevance_score = relevance_scorer.score_context_relevance(source_context, query)
-      
-      if relevance_score > RELEVANCE_THRESHOLD:
-        context_bundle.add(source_context, relevance_score)
-        token_budget.consume(source_context.token_count)
-      
-    catch SourceError as e:
-      // Continue with other sources if one fails
-      memory_manager.log_source_error(source_config.source, e)
-      continue
-  
-  // Optimize final context within token limits
-  if context_bundle.token_count > maxTokens:
-    context_bundle = context_optimizer.optimize_context_window(context_bundle, maxTokens)
-  
-  // Validate context quality
-  quality_score = evaluate_context_quality(context_bundle, query)
-  if quality_score < QUALITY_THRESHOLD:
-    return ContextError.LOW_QUALITY_CONTEXT(quality_score)
-  
-  // Store context metadata in session state
-  session_state.store_context_metadata(sessionId, context_bundle.metadata)
-  
-  return ContextBundle.SUCCESS(context_bundle)
+Context Assembly Pattern:
+  assembleContext(query, session, sources) = 
+    baseContext ← gatherContextData(sources)
+    queryContext ← analyzeQuery(query)
+    sessionContext ← extractSessionContext(session)
+    composeContexts([baseContext, queryContext, sessionContext])
+
+Context Adapter Chain Pattern:
+  applyAdapterChain(adapters, context) = 
+    fold(applyAdapter, context, adapters)
+  applyAdapter(currentContext, adapter) = adapter.adapt(currentContext)
 ```
 
-### Tool Executor Container Components (Enhanced with Chain Coordination)
-
-```mermaid
-graph TB
-    subgraph "Tool Executor Container"
-        ToolRegistry[📋 Tool Registry<br/>Tool Management]
-        ChainCoordinator[🔗 Chain Coordinator<br/>Sequential Execution]
-        ExecutionEngine[⚙️ Execution Engine<br/>Execution Control]
-        ContextPasser[🔄 Context Passer<br/>Context Sharing]
-        ResultIntegrator[📊 Result Integrator<br/>Result Processing]
-        SecuritySandbox[🔒 Security Sandbox<br/>Security Isolation]
-        ChainErrorHandler[⚠️ Chain Error Handler<br/>Chain Error Management]
-    end
-    
-    subgraph "Specialized Tools"
-        FileTools[📁 File Tools<br/>File Operations]
-        GitTools[🔄 Git Tools<br/>Version Control]
-        APITools[🌐 API Tools<br/>External Integration]
-        CodeTools[💻 Code Tools<br/>Code Analysis]
-    end
-    
-    subgraph "External Systems"
-        FlowCoordinator[⚡ Flow Coordinator]
-        ContextEngine[🔍 Context Engine]
-        DocumentIndex[📚 Document Index]
-        FileSystem[💾 File System]
-        Git[🔄 Git Repository]
-        ExternalAPIs[🌐 External APIs]
-    end
-    
-    %% Flow coordinator integration
-    FlowCoordinator <==>|"Tool execution requests"| ChainCoordinator
-    
-    %% Chain coordination flow
-    ChainCoordinator -->|"Chain planning"| ContextPasser
-    ChainCoordinator -->|"Tool metadata"| ToolRegistry
-    ChainCoordinator -->|"Execute sequence"| ExecutionEngine
-    ExecutionEngine -->|"Sandboxed execution"| SecuritySandbox
-    ExecutionEngine -->|"Raw results"| ResultIntegrator
-    ResultIntegrator -->|"Integrated results"| ContextEngine
-    ChainErrorHandler -->|"Error recovery"| ChainCoordinator
-    
-    %% Context passing between tools
-    ContextPasser -->|"Shared context"| ExecutionEngine
-    ExecutionEngine -->|"Updated context"| ContextPasser
-    
-    %% Tool execution through sandbox
-    SecuritySandbox -->|"File operations"| FileTools
-    SecuritySandbox -->|"Git operations"| GitTools
-    SecuritySandbox -->|"API calls"| APITools
-    SecuritySandbox -->|"Code analysis"| CodeTools
-    
-    %% External system access
-    FileTools <==>|"File I/O"| FileSystem
-    GitTools <==>|"Git commands"| Git
-    APITools <==>|"HTTP requests"| ExternalAPIs
-    CodeTools <==>|"Code parsing"| FileSystem
-    
-    %% Background indexing
-    ResultIntegrator -.->|"Background indexing"| DocumentIndex
-    
-    %% Styling
-    classDef core fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
-    classDef tools fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:1px
-    
-    class ToolRegistry,ChainCoordinator,ExecutionEngine,ContextPasser,ResultIntegrator,SecuritySandbox,ChainErrorHandler core
-    class FileTools,GitTools,APITools,CodeTools tools
-    class FlowCoordinator,ContextEngine,DocumentIndex,FileSystem,Git,ExternalAPIs external
-```
-
-#### Chain Coordinator Component
+#### Plugin Adapter Chain Component
 
 **Interface Contract**:
 ```
-ChainCoordinator Operations:
-    executeToolChain(toolSequence: ToolSequence, sharedContext: ChainContext) -> ChainResult | ChainError
-    planChainExecution(toolSequence: ToolSequence, context: ChainContext) -> ExecutionPlan | PlanError
-    coordinateContextPassing(toolResults: ToolResults, chainContext: ChainContext) -> UpdatedContext
-    handleChainFailure(failedTool: ToolSpec, partialResults: ToolResults, context: ChainContext) -> RecoveryResult
-    validateChainSafety(toolSequence: ToolSequence, context: ChainContext) -> SafetyResult
+PluginAdapterChain Operations:
+  - buildChain(adapters: ContextAdapter[]) → AdapterChain
+  - executeChain(chain: AdapterChain, context: Context) → Context
+  - optimizeChain(chain: AdapterChain) → OptimizedChain
+  - cacheChainResult(chain: AdapterChain, result: Context) → CacheEntry
 ```
 
-**Complex Logic - Tool Chain Execution**:
+**Chain Composition Patterns**:
 ```
-function executeToolChain(toolSequence, sharedContext) -> ChainResult | ChainError:
-  // Initialize chain execution context
-  chain_context = context_passer.initialize_chain_context(sharedContext)
-  executed_tools = []
-  chain_results = []
-  
-  // Plan chain execution with dependency analysis
-  execution_plan = plan_chain_execution(toolSequence, chain_context)
-  if execution_plan.failed:
-    return ChainError.PLANNING_FAILED(execution_plan.error)
-  
-  // Execute tools in planned sequence
-  for tool_spec in execution_plan.tool_sequence:
-    try:
-      // Validate tool safety within current context
-      safety_check = validate_tool_safety(tool_spec, chain_context)
-      if safety_check.failed:
-        return ChainError.UNSAFE_TOOL(tool_spec.name, safety_check.reasons)
-      
-      // Prepare tool execution environment with current context
-      execution_env = security_sandbox.prepare_tool_environment(tool_spec, chain_context)
-      
-      // Execute tool in isolated environment
-      tool_result = execution_engine.execute_tool_isolated(
-        tool_spec.name, 
-        tool_spec.parameters, 
-        execution_env
-      )
-      
-      if tool_result.failed:
-        // Handle tool failure with partial results
-        return chain_error_handler.handle_tool_failure(
-          tool_spec.name, 
-          tool_result.error, 
-          executed_tools,
-          chain_results,
-          chain_context
-        )
-      
-      // Update chain context with tool result
-      chain_context = context_passer.integrate_tool_result(chain_context, tool_result)
-      executed_tools.append(tool_spec)
-      chain_results.append(tool_result)
-      
-      // Check for chain termination conditions
-      if should_terminate_chain(tool_result, execution_plan):
-        break
-        
-      // Apply rate limiting between tools
-      apply_tool_rate_limiting(tool_spec, chain_context)
-      
-    catch ToolExecutionError as e:
-      // Isolate tool errors to prevent chain corruption
-      return chain_error_handler.isolate_tool_error(tool_spec.name, e, chain_context)
-  
-  // Finalize chain execution and integrate results
-  final_context = context_passer.finalize_chain_context(chain_context, chain_results)
-  integrated_results = result_integrator.integrate_chain_results(chain_results, final_context)
-  
-  // Background indexing of tool results
-  result_integrator.async_index_tool_results(chain_results, final_context)
-  
-  return ChainResult.SUCCESS(final_context, integrated_results)
+Adapter Chain Construction:
+  buildAdapterChain(adapters) = 
+    validateAdapters(adapters) → composeAdapters(adapters)
+
+Chain Execution with Error Isolation:
+  executeAdapterChain(chain, context) = 
+    result ← safelyExecuteChain(chain, context)
+    validateContextIntegrity(result)
+    result
 ```
 
-#### Result Integrator Component
+## Functional Tool Registry Components
+
+### Tool Enhancement Components with Adapter Pattern
+
+```mermaid
+graph TB
+    %% Functional Tool Registry Container
+    subgraph ToolRegistryContainer["🛠️ Functional Tool Registry Container"]
+        direction TB
+        ToolManager[🛠️ Tool Manager<br/>Immutable Tool Registry]
+        ToolAdapterRegistry[🔌 Tool Adapter Registry<br/>Enhancement Adapters]
+        ToolExecutionEngine[⚡ Tool Execution Engine<br/>Secure Execution]
+        ToolChainComposer[🔗 Tool Chain Composer<br/>Sequential Execution]
+        ToolResultProcessor[📋 Tool Result Processor<br/>Result Integration]
+    end
+    
+    %% Core Tools (Phase 1)
+    subgraph CoreTools["🛠️ Core Tools (Phase 1)"]
+        direction TB
+        FileTools[📄 File Tools<br/>Read/Write/List]
+        GitTools[🔄 Git Tools<br/>Status/Log/Diff]
+        SystemTools[⚙️ System Tools<br/>Execute/Info/Path]
+        HTTPTools[🌐 HTTP Tools<br/>Request/Response]
+        ConfigTools[⚚ Config Tools<br/>Environment/Settings]
+    end
+    
+    %% Tool Adapter Types
+    subgraph ToolAdapterTypes["🔌 Tool Adapter Types"]
+        direction TB
+        BaseToolAdapter[🛠️ Base Tool Adapter<br/>Core Enhancement]
+        SemanticToolAdapter[📚 Semantic Tool Adapter<br/>Phase 2: Vector Search]
+        AgentToolAdapter[🤖 Agent Tool Adapter<br/>Phase 3: Agent Context]
+        AutonomyToolAdapter[🧠 Autonomy Tool Adapter<br/>Phase 4: Goal Awareness]
+    end
+    
+    %% External Systems
+    FileSystem[💾 File System<br/>Workspace]
+    Git[🔄 Git Repository<br/>Version Control]
+    SystemAPIs[⚙️ System APIs<br/>Environment]
+    ExternalAPIs[🌐 External APIs<br/>Web Services]
+    PluginRegistry[🔌 Plugin Registry<br/>Adapter Source]
+    
+    %% Tool Management Flow
+    ToolManager -->|"Register tools"| FileTools
+    ToolManager -->|"Register tools"| GitTools
+    ToolManager -->|"Register tools"| SystemTools
+    ToolManager -->|"Register tools"| HTTPTools
+    ToolManager -->|"Register tools"| ConfigTools
+    
+    %% Adapter Registration Flow
+    PluginRegistry -->|"Tool adapters"| ToolAdapterRegistry
+    BaseToolAdapter -->|"Register"| ToolAdapterRegistry
+    SemanticToolAdapter -.->|"Phase 2 registration"| ToolAdapterRegistry
+    AgentToolAdapter -.->|"Phase 3 registration"| ToolAdapterRegistry
+    AutonomyToolAdapter -.->|"Phase 4 registration"| ToolAdapterRegistry
+    
+    %% Tool Enhancement Flow
+    ToolManager -->|"Base tools"| ToolAdapterRegistry
+    ToolAdapterRegistry -->|"Enhanced tools"| ToolExecutionEngine
+    ToolExecutionEngine -->|"Execute tools"| ToolChainComposer
+    ToolChainComposer -->|"Chain results"| ToolResultProcessor
+    
+    %% External Execution
+    ToolExecutionEngine -->|"File operations"| FileSystem
+    ToolExecutionEngine -->|"Git operations"| Git
+    ToolExecutionEngine -->|"System calls"| SystemAPIs
+    ToolExecutionEngine -->|"HTTP requests"| ExternalAPIs
+    
+    %% Styling
+    style ToolManager fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style ToolAdapterRegistry fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    style ToolExecutionEngine fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style ToolChainComposer fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    style ToolResultProcessor fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+    
+    style FileTools fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style GitTools fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style SystemTools fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style HTTPTools fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ConfigTools fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    style BaseToolAdapter fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style SemanticToolAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AgentToolAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AutonomyToolAdapter fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+#### Tool Manager Component
 
 **Interface Contract**:
 ```
-ResultIntegrator Operations:
-    integrateResults(toolResults: ToolResults, conversationContext: ConversationContext) -> IntegratedContext | IntegrationError
-    determineIntegrationStrategy(toolResult: ToolResult, context: ConversationContext) -> IntegrationStrategy
-    validateContextIntegrity(integratedContext: IntegratedContext) -> IntegrityResult
-    indexToolResults(toolResults: ToolResults, context: IndexingContext) -> IndexResult
-    optimizeIntegration(integrationPatterns: IntegrationPatterns) -> IntegrationOptimization
+ToolManager Operations:
+  - registerTool(tool: Tool) → RegistrationResult
+  - enhanceTool(tool: Tool, adapters: ToolAdapter[]) → EnhancedTool
+  - discoverTools(criteria: ToolCriteria) → Tool[]
+  - executeTool(tool: Tool, params: ToolParams, context: Context) → ToolResult
 ```
 
-**Complex Logic - Tool Result Integration**:
+**Functional Tool Enhancement Pattern**:
 ```
-function integrateResults(toolResults, conversationContext) -> IntegratedContext | IntegrationError:
-  // Initialize integration context
-  integrated_context = ConversationContext.clone(conversationContext)
-  integration_log = []
-  
-  // Process each tool result for integration
-  for tool_result in toolResults:
-    try:
-      // Extract relevant information from tool result
-      relevant_data = extract_relevant_data(tool_result, conversationContext)
-      
-      // Determine integration strategy based on result type and context
-      integration_strategy = determine_integration_strategy(
-        tool_result.type, 
-        relevant_data, 
-        integrated_context
-      )
-      
-      // Apply integration strategy
-      switch integration_strategy:
-        case APPEND_TO_CONTEXT:
-          integrated_context = append_context_data(integrated_context, relevant_data)
-        case MERGE_WITH_EXISTING:
-          integrated_context = merge_context_data(integrated_context, relevant_data)
-        case REPLACE_CONTEXT_SECTION:
-          integrated_context = replace_context_section(integrated_context, relevant_data)
-        case CREATE_NEW_CONTEXT_LAYER:
-          integrated_context = add_context_layer(integrated_context, relevant_data)
-        case REFERENCE_EXTERNAL:
-          integrated_context = add_external_reference(integrated_context, relevant_data)
-      
-      // Validate integration didn't corrupt context
-      integrity_check = validate_context_integrity(integrated_context)
-      if integrity_check.failed:
-        return IntegrationError.CONTEXT_CORRUPTION(integrity_check.errors)
-      
-      integration_log.append({tool: tool_result.id, strategy: integration_strategy})
-      
-    catch IntegrationError as e:
-      // Continue with other results if one fails
-      log_integration_error(tool_result.id, e)
-      continue
-  
-  // Background indexing of integrated results
-  async_index_integrated_results(integration_log, integrated_context)
-  
-  return IntegratedContext.SUCCESS(integrated_context)
+Tool Enhancement Pattern:
+  enhanceTool(adapters, tool) = 
+    fold(applyEnhancement, tool, adapters)
+  applyEnhancement(currentTool, adapter) = adapter.enhance(currentTool)
+
+Tool Registration Pattern:
+  registerTool(tool, registry) = 
+    addTool(tool, validateToolInterface(tool, registry))
 ```
 
-### Session State Container Components
-
-```mermaid
-graph TB
-    subgraph "Session State Container"
-        SessionCacheManager[⚡ Session Cache Manager<br/>Cache Operations]
-        FlowStateTracker[🔄 Flow State Tracker<br/>Flow Coordination]
-        PerformanceDataCollector[📊 Performance Data Collector<br/>Metrics Collection]
-        CacheCoherenceManager[🔄 Cache Coherence Manager<br/>Consistency Control]
-        SessionExpirationManager[⏰ Session Expiration Manager<br/>Lifecycle Management]
-    end
-    
-    subgraph "External Containers"
-        FlowCoordinator[⚡ Flow Coordinator]
-        CLIInterface[📱 CLI Interface]
-        MCPProtocol[📡 MCP Protocol]
-        ContextEngine[🔍 Context Engine]
-        LLMInterface[🎯 LLM Interface]
-    end
-    
-    %% Flow coordination
-    FlowCoordinator <==>|"Flow state coordination"| FlowStateTracker
-    FlowStateTracker -->|"State updates"| SessionCacheManager
-    
-    %% Session management
-    CLIInterface <==>|"CLI session data"| SessionCacheManager
-    MCPProtocol <==>|"MCP session data"| SessionCacheManager
-    ContextEngine <==>|"Context metadata"| SessionCacheManager
-    
-    %% Performance monitoring
-    LLMInterface -->|"Performance metrics"| PerformanceDataCollector
-    PerformanceDataCollector -->|"Metrics storage"| SessionCacheManager
-    
-    %% Cache management
-    SessionCacheManager -->|"Coherence checks"| CacheCoherenceManager
-    SessionExpirationManager -->|"Expiration policies"| SessionCacheManager
-    
-    %% Styling
-    classDef session fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:1px
-    
-    class SessionCacheManager,FlowStateTracker,PerformanceDataCollector,CacheCoherenceManager,SessionExpirationManager session
-    class FlowCoordinator,CLIInterface,MCPProtocol,ContextEngine,LLMInterface external
-```
-
-#### Session Cache Manager Component
+#### Tool Adapter Registry Component
 
 **Interface Contract**:
 ```
-SessionCacheManager Operations:
-    cacheSessionData(sessionId: SessionId, data: SessionData, ttl: TimeToLive) -> CacheResult | CacheError
-    retrieveSessionData(sessionId: SessionId, keys: DataKeys) -> SessionData | RetrievalError
-    updateCache(sessionId: SessionId, updates: CacheUpdates) -> UpdateResult | UpdateError
-    invalidateCache(sessionId: SessionId, pattern: InvalidationPattern) -> InvalidationResult
-    coordinateWithFlowState(sessionId: SessionId, flowContext: FlowContext) -> CoordinationResult
-    enforceCoherence(sessionId: SessionId) -> CoherenceResult
+ToolAdapterRegistry Operations:
+  - registerAdapter(adapter: ToolAdapter) → RegistrationResult
+  - discoverAdapters(tool: Tool) → ToolAdapter[]
+  - composeAdapters(adapters: ToolAdapter[]) → CompositeAdapter
+  - applyAdapters(adapters: ToolAdapter[], tool: Tool) → EnhancedTool
 ```
 
-**Behavioral Specifications**:
-- **High-Performance Caching**: Sub-millisecond access to frequently used session data
-- **Flow State Coordination**: Coordinate with Flow State Tracker for consistent flow management
-- **Cache Coherence**: Ensure cache consistency across multiple container access patterns
-- **Automatic Expiration**: Time-based invalidation with configurable TTL policies
-- **Memory Optimization**: Intelligent eviction policies based on access patterns and session priority
+**Adapter Composition Pattern**:
+```
+Tool Adapter Composition:
+  composeToolAdapters(adapters, tool) = 
+    fold(applyAdapter, tool, adapters)
+  applyAdapter(currentTool, adapter) = adapter.enhance(currentTool)
 
-## Storage Layer Components (Refined Boundaries)
+Adapter Discovery Pattern:
+  discoverAdapters(tool, registry) = 
+    filter(canEnhance(tool), getAllAdapters(registry))
+```
 
-### Conversation Store Components
+## Event-Sourced Session Components
+
+### Session Management with Plugin-Extensible Event Handling
 
 ```mermaid
 graph TB
-    subgraph "Conversation Store Container"
-        ConversationPersister[💾 Conversation Persister<br/>Storage Operations]
-        HistoryIndexer[📇 History Indexer<br/>Query Optimization]
-        PatternAnalyzer[🔍 Pattern Analyzer<br/>Learning System]
-        UserPreferenceManager[👤 User Preference Manager<br/>Preference Storage]
-        ConversationValidator[✓ Conversation Validator<br/>Data Integrity]
+    %% Event-Sourced Session Container
+    subgraph SessionContainer["👤 Event-Sourced Session Container"]
+        direction TB
+        SessionManager[👤 Session Manager<br/>Session Lifecycle]
+        EventDispatcher[📝 Event Dispatcher<br/>Event Processing]
+        StateReconstructor[🔄 State Reconstructor<br/>State from Events]
+        SessionCache[💾 Session Cache<br/>Active Session Data]
+        PluginEventHandlers[🔌 Plugin Event Handlers<br/>Plugin Event Processing]
     end
     
-    subgraph "External Containers"
-        ContextEngine[🔍 Context Engine]
-        MemoryManager[🧠 Memory Manager]
+    %% Event Types
+    subgraph EventTypes["📝 Event Types"]
+        direction TB
+        SessionEvents[👤 Session Events<br/>Lifecycle Events]
+        InteractionEvents[💬 Interaction Events<br/>Query/Response Events]
+        ContextEvents[📚 Context Events<br/>Context Assembly Events]
+        ToolEvents[🛠️ Tool Events<br/>Tool Execution Events]
+        PluginEvents[🔌 Plugin Events<br/>Plugin-Generated Events]
     end
     
-    %% Storage operations (conversations only)
-    ContextEngine <==>|"Store/retrieve conversations"| ConversationPersister
-    ContextEngine <==>|"Query conversation history"| HistoryIndexer
-    MemoryManager <==>|"Interaction patterns"| PatternAnalyzer
-    MemoryManager <==>|"User preferences"| UserPreferenceManager
+    %% Plugin Event Handler Types
+    subgraph PluginEventHandlerTypes["🔌 Plugin Event Handler Types"]
+        direction TB
+        BaseEventHandler[📝 Base Event Handler<br/>Core Event Processing]
+        RAGEventHandler[📚 RAG Event Handler<br/>Phase 2: Context Events]
+        AgentEventHandler[🤖 Agent Event Handler<br/>Phase 3: Agent Events]
+        AutonomyEventHandler[🧠 Autonomy Event Handler<br/>Phase 4: Goal Events]
+    end
     
-    %% Internal data flows
-    ConversationPersister -->|"Data validation"| ConversationValidator
-    ConversationPersister -->|"Indexing updates"| HistoryIndexer
-    HistoryIndexer -->|"Pattern data"| PatternAnalyzer
+    %% External Systems
+    EventStore[📝 Event Store<br/>Immutable Event Storage]
+    PluginRegistry[🔌 Plugin Registry<br/>Handler Registration]
+    
+    %% Session Management Flow
+    SessionManager -->|"Create/manage sessions"| SessionCache
+    SessionManager -->|"Dispatch events"| EventDispatcher
+    EventDispatcher -->|"Process events"| PluginEventHandlers
+    PluginEventHandlers -->|"Enhanced events"| EventStore
+    StateReconstructor -->|"Read events"| EventStore
+    StateReconstructor -->|"Reconstructed state"| SessionCache
+    
+    %% Event Type Processing
+    SessionEvents -->|"Session lifecycle"| EventDispatcher
+    InteractionEvents -->|"User interactions"| EventDispatcher
+    ContextEvents -->|"Context operations"| EventDispatcher
+    ToolEvents -->|"Tool executions"| EventDispatcher
+    PluginEvents -->|"Plugin operations"| EventDispatcher
+    
+    %% Plugin Handler Registration
+    PluginRegistry -->|"Event handlers"| PluginEventHandlers
+    BaseEventHandler -->|"Register"| PluginEventHandlers
+    RAGEventHandler -.->|"Phase 2 registration"| PluginEventHandlers
+    AgentEventHandler -.->|"Phase 3 registration"| PluginEventHandlers
+    AutonomyEventHandler -.->|"Phase 4 registration"| PluginEventHandlers
     
     %% Styling
-    classDef storage fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:1px
+    style SessionManager fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style EventDispatcher fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style StateReconstructor fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style SessionCache fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style PluginEventHandlers fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
     
-    class ConversationPersister,HistoryIndexer,PatternAnalyzer,UserPreferenceManager,ConversationValidator storage
-    class ContextEngine,MemoryManager external
+    style SessionEvents fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style InteractionEvents fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ContextEvents fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style ToolEvents fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style PluginEvents fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    style BaseEventHandler fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style RAGEventHandler fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AgentEventHandler fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
+    style AutonomyEventHandler fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
-**Storage Boundary Enforcement**:
-- **Includes**: Conversation logs, user preferences, interaction success patterns, session metadata
-- **Excludes**: Document content, embeddings, temporary session state, file system data
+#### Event Dispatcher Component
 
-### Document Index Components
-
-```mermaid
-graph TB
-    subgraph "Document Index Container"
-        DocumentIndexer[📚 Document Indexer<br/>Embedding Generation]
-        SemanticSearchEngine[🔍 Semantic Search Engine<br/>Vector Search]
-        EmbeddingManager[🎯 Embedding Manager<br/>Vector Management]
-        KnowledgeGraphBuilder[🕸️ Knowledge Graph Builder<br/>Relationship Mapping]
-        IndexOptimizer[⚡ Index Optimizer<br/>Performance Tuning]
-        ToolResultIndexer[🛠️ Tool Result Indexer<br/>Background Indexing]
-    end
-    
-    subgraph "External Containers"
-        ContextEngine[🔍 Context Engine]
-        WorkspaceAnalyzer[📁 Workspace Analyzer]
-        ToolExecutor[🛠️ Tool Executor]
-    end
-    
-    %% Document search operations (documents only)
-    ContextEngine <==>|"Semantic search queries"| SemanticSearchEngine
-    WorkspaceAnalyzer <==>|"Document indexing"| DocumentIndexer
-    ToolExecutor -.->|"Background tool indexing"| ToolResultIndexer
-    
-    %% Internal indexing flows
-    DocumentIndexer -->|"Generate embeddings"| EmbeddingManager
-    EmbeddingManager -->|"Vector storage"| SemanticSearchEngine
-    DocumentIndexer -->|"Build relationships"| KnowledgeGraphBuilder
-    ToolResultIndexer -->|"Tool result embeddings"| EmbeddingManager
-    IndexOptimizer -->|"Performance tuning"| SemanticSearchEngine
-    
-    %% Styling
-    classDef index fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:1px
-    
-    class DocumentIndexer,SemanticSearchEngine,EmbeddingManager,KnowledgeGraphBuilder,IndexOptimizer,ToolResultIndexer index
-    class ContextEngine,WorkspaceAnalyzer,ToolExecutor external
+**Interface Contract**:
+```
+EventDispatcher Operations:
+  - dispatchEvent(event: SessionEvent) → EventResult
+  - registerHandler(handler: EventHandler) → RegistrationResult
+  - processEventChain(handlers: EventHandler[], event: SessionEvent) → ProcessedEvent
+  - optimizeEventFlow(events: SessionEvent[]) → OptimizedFlow
 ```
 
-**Storage Boundary Enforcement**:
-- **Includes**: Document embeddings, semantic indexes, file metadata, tool result indexes, knowledge graphs
-- **Excludes**: Conversation history, user preferences, active session state
-
-## Inter-Container Component Communication
-
-### Request Flow Patterns
-
-**CLI Request Flow (Objective 1)**:
+**Functional Event Processing Pattern**:
 ```
-CLI App → CLI Request Handler → Request Router → Flow Orchestrator → Context Assembler → LLM Interface
-                                                     ↓
-                               Chain Coordinator ← Context Assembler (if tools needed)
+Event Handler Chain Processing:
+  processEventWithHandlers(handlers, event) = 
+    fold(processEvent, event, handlers)
+  processEvent(currentEvent, handler) = 
+    handler.handle(currentEvent) ?? currentEvent
+
+Event Enhancement Pattern:
+  enhanceEvent(handlers, event) = 
+    processEventWithHandlers(getApplicableHandlers(handlers, event), event)
 ```
 
-**VS Code Request Flow (Objective 2)**:
+#### State Reconstructor Component
+
+**Interface Contract**:
 ```
-VS Code → Protocol Handler → Request Router → Flow Orchestrator → Context Assembler → Chain Coordinator → Tools
-                                           ↓                        ↓                    ↓
-                          Session State ← Session State Coordinator ← Flow State Tracker ← Tool Results
+StateReconstructor Operations:
+  - reconstructState(events: SessionEvent[]) → SessionState
+  - projectSessionData(events: SessionEvent[]) → ProjectionData
+  - optimizeStateReconstruction(events: SessionEvent[]) → OptimizedEvents
+  - cacheProjection(projection: ProjectionData) → CacheEntry
 ```
 
-### Component Synchronization Points
+**Functional State Reconstruction Pattern**:
+```
+State Reconstruction Pattern:
+  reconstructState(events) = 
+    fold(applyEvent, initialState, events)
 
-**Context Window Optimization Trigger**:
-- Triggered by Context Optimizer when assembled context exceeds token limits
-- Coordinated by Flow Orchestrator to ensure consistent optimization across requests
+Event Application with Validation:
+  applyEvent(state, event) = 
+    if validateEvent(event, state) = Valid 
+      then enhanceState(state, event)
+      else state  # Preserve state integrity
+```
 
-**Tool Chain Execution Coordination**:
-- Flow Orchestrator initiates chain execution through Chain Coordinator
-- Context Passer manages context sharing between tools in sequence
-- Result Integrator processes final tool results for context integration
+## Performance Characteristics
 
-**Session State Synchronization**:
-- Session State Coordinator triggers cache updates after successful request processing
-- Flow State Tracker maintains flow coordination state across container interactions
-- Cache Coherence Manager ensures consistency without blocking request processing
+### Plugin-Aware Performance Targets
+- **Plugin Registration**: < 10ms per plugin with interface validation
+- **Adapter Chain Execution**: < 5ms per adapter in composition
+- **Context Enhancement**: < 20ms for plugin-enhanced context assembly
+- **Tool Enhancement**: < 15ms for plugin-enhanced tool execution
+- **Event Processing**: < 5ms for plugin event handler chains
 
-**Error Isolation and Recovery**:
-- Error Isolation Manager prevents container errors from cascading to other containers
-- Chain Error Handler manages tool chain failures with partial result preservation
-- Session state rollback on critical failures to maintain consistency
+### Functional Programming Benefits
+- **Memory Efficiency**: Structural sharing in immutable data structures
+- **Parallelization**: Pure functions enable safe concurrent execution
+- **Predictability**: Immutable state eliminates race conditions
+- **Error Isolation**: Plugin failures contained within composition boundaries
+
+### Plugin Extension Impact
+- **Phase 2 RAG**: +50ms typical for semantic context enhancement
+- **Phase 3 sAgents**: +30ms typical for agent coordination
+- **Phase 4 Autonomy**: +100ms typical for autonomous analysis
+- **Combined Phases**: +200ms maximum for full plugin chain execution
 
 ---
 

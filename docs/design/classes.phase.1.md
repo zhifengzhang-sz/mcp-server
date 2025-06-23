@@ -1,535 +1,684 @@
-# C4: Class Design - Phase 1 Architecture
+# C4: Class Design - Plugin-Ready Architecture
 
-> Language-Independent Class Architecture Design  
-> Part of: [Phase 1 Design](phase.1.md)  
-> Based on: [C3: Component Design](component.phase.1.md)  
-> Date: December 19, 2024
+> **Functional Programming Class Architecture with Plugin Patterns**  
+> **Part of**: [Phase 1 Design](phase.1.md)  
+> **Based on**: [C3: Component Design](component.phase.1.md)  
+> **Architecture**: Language-independent functional + plugin design patterns
 
 ## Design Objectives
 
-This document translates the **component architecture** from [component.phase.1.md](component.phase.1.md) into **language-independent class design** suitable for implementation in any object-oriented language.
+This document translates the **plugin-ready component architecture** from [component.phase.1.md](component.phase.1.md) into **functional programming class design** with plugin extension patterns suitable for implementation in any functional or hybrid language.
 
 ### **Primary Goals**
-1. **Define Class Responsibilities**: Clear separation of concerns and single responsibility principle
-2. **Establish Relationships**: Class hierarchies, composition, and dependency patterns
-3. **Specify Interfaces**: Abstract contracts independent of implementation language
-4. **Enable Implementation**: Provide sufficient architectural detail for any language choice
-5. **Maintain Component Integrity**: Preserve all architectural decisions from component design
+1. **Plugin Interface Contracts**: Clean plugin extension interfaces for Phase 2-4
+2. **Functional Class Design**: Immutable data structures with pure function operations
+3. **Adapter Pattern Implementation**: Tool and context enhancement through adapters
+4. **Event Sourcing Classes**: Immutable event streams for session management
+5. **Composition Patterns**: Functional composition for plugin chains
 
 ### **Design Principles**
-- **Language Agnostic**: No implementation-specific details
-- **Interface-Driven**: Focus on contracts and responsibilities
-- **Relationship-Focused**: Clear dependency and composition patterns
-- **Testability**: Design supports unit testing and mocking
-- **Extensibility**: Architecture supports future enhancements
+- **Plugin-First**: Every class designed with plugin extension points
+- **Immutable by Default**: All data structures are immutable with transformation functions
+- **Pure Function Operations**: Side-effect-free methods with predictable behavior
+- **Interface-Driven**: Focus on contracts and plugin composition patterns
+- **Functional Composition**: Complex operations built from simple function composition
 
-## Class Architecture Overview
+## Plugin Architecture Class Overview
 
-The class design follows the same container structure as the component design, organized by architectural layers:
+The class design follows the plugin-ready architecture with functional programming patterns:
 
 ```mermaid
 classDiagram
-    %% Interface Layer Classes
-    class CLIRequestHandler {
-        +processRequest(request, session)
-        +validateInput(input)
-        +routeToCoordinator(request)
-        -optimizeForCLI(context)
+    %% Core Plugin System Classes
+    class PluginRegistry {
+        +plugins: ImmutableMap[PluginId, Plugin]
+        +register(plugin: Plugin): PluginRegistry
+        +discover(criteria: DiscoveryCriteria): Plugin[]
+        +compose(plugins: Plugin[]): CompositePlugin
+        +validate(plugin: Plugin): ValidationResult
     }
     
-    class ProtocolHandler {
-        +processMessage(message)
-        +validateProtocol(message)
-        +parseRequest(rawMessage)
-        +serializeResponse(response)
+    class CompositionEngine {
+        +composePluginChain(plugins: Plugin[]): PluginChain
+        +composeAdapters(adapters: Adapter[]): CompositeAdapter
+        +executeChain(chain: PluginChain, request: MCPRequest): MCPResponse
+        +optimizeComposition(chain: PluginChain): OptimizedChain
     }
     
-    class SessionManager {
-        <<abstract>>
-        +createSession(id, type)
-        +getSession(id)
-        +updateSession(session, data)
-        +expireSession(id)
+    %% Plugin Interface Classes
+    class Plugin {
+        <<interface>>
+        +name: String
+        +version: String
+        +process(request: MCPRequest): Optional[Enhancement]
     }
     
-    class CLISessionManager {
-        +optimizeForCLI(session)
-        +handleCLIPreferences(preferences)
+    class ContextAdapter {
+        <<interface>>
+        +adapt(context: Context): Context
     }
     
-    class MCPSessionManager {
-        +handleIDEIntegration(ideType)
-        +manageMultipleIDEs(sessions)
+    class ToolAdapter {
+        <<interface>>
+        +enhance(tool: Tool): Tool
     }
     
-    %% Orchestration Layer Classes
-    class FlowCoordinator {
-        +routeRequest(request, source)
-        +coordinateFlow(plan, context)
-        +orchestrateComponents(components)
-        -createProcessingPlan(request)
+    class EventHandler {
+        <<interface>>
+        +handle(event: SessionEvent): Optional[SessionEvent]
     }
     
-    class RequestRouter {
-        +analyzeRequest(request)
-        +determineFlow(requestType)
-        +routeToProcessor(request, target)
+    %% Functional Context Classes
+    class FunctionalContextEngine {
+        +contextSources: ImmutableList[ContextSource]
+        +adapters: ImmutableList[ContextAdapter]
+        +assemble(query: Query, session: Session): Context
+        +enhance(adapters: ContextAdapter[], context: Context): Context
+        +optimize(constraints: TokenConstraints, context: Context): Context
     }
     
-    %% Processing Layer Classes
-    class ContextAssembler {
-        +assembleContext(query, session)
-        +optimizeTokenUsage(context, limits)
-        +scoreRelevance(context, query)
-        -gatherFromSources(sources)
+    class Context {
+        +conversationHistory: ImmutableList[Interaction]
+        +workspaceState: WorkspaceSnapshot
+        +assemblyMetadata: ContextMetadata
+        +compose(other: Context): Context
+        +transform(transformer: ContextTransformer): Context
+        +getTokenCount(): Integer
     }
     
-    class ToolExecutor {
-        +executeChain(tools, context)
-        +validateSecurity(tool, context)
-        +integrateResults(results, context)
-        -executeSingleTool(tool, params)
+    %% Functional Tool Classes
+    class FunctionalToolRegistry {
+        +tools: ImmutableMap[ToolId, Tool]
+        +adapters: ImmutableList[ToolAdapter]
+        +register(tool: Tool): ToolRegistry
+        +enhance(adapters: ToolAdapter[], tool: Tool): Tool
+        +execute(tool: Tool, request: ToolRequest): ToolResult
     }
     
-    %% Data Layer Classes
-    class SessionCache {
-        +store(key, data, ttl)
-        +retrieve(key)
-        +invalidate(key)
-        +cleanup(expiredKeys)
+    class Tool {
+        +id: ToolId
+        +metadata: ToolMetadata
+        +executor: Function&lt;ToolRequest, ToolResult&gt;
+        +enhance(adapter: ToolAdapter): Tool
+        +compose(other: Tool): ComposeTool
     }
     
-    %% Core Data Structures
-    class ContextBundle {
-        +conversationContext
-        +workspaceContext
-        +semanticContext
-        +toolContext
-        +assemblyMetadata
-        +getTokenCount()
-        +getSummary()
+    %% Event Sourcing Classes
+    class EventSourcedSession {
+        +events: ImmutableList[SessionEvent]
+        +state: SessionState
+        +appendEvent(event: SessionEvent): EventSourcedSession
+        +reconstructState(): SessionState
+        +replay(eventHandlers: EventHandler[]): EventSourcedSession
     }
     
-    class ProcessingRequest {
-        +requestType
-        +query
-        +context
-        +session
-        +timestamp
-        +validate()
+    class SessionEvent {
+        +eventId: EventId
+        +timestamp: Timestamp
+        +eventType: EventType
+        +payload: EventPayload
+        +enhance(handler: EventHandler): SessionEvent
     }
     
-    class FlowResult {
-        +success
-        +responseData
-        +executionTime
-        +toolsUsed
-        +contextSummary
+    %% Plugin Extension Points (Future Phases)
+    class RAGContextAdapter {
+        <<Phase 2 Extension>>
+        +semanticSearch: SemanticSearchEngine
+        +adapt(context: Context): Context
+    }
+    
+    class AgentCoordinator {
+        <<Phase 3 Extension>>
+        +agentRegistry: AgentRegistry
+        +process(request: MCPRequest): Optional[Enhancement]
+    }
+    
+    class AutonomyController {
+        <<Phase 4 Extension>>
+        +goalManager: GoalManager
+        +process(request: MCPRequest): Optional[Enhancement]
     }
     
     %% Relationships
-    CLIRequestHandler --> FlowCoordinator
-    ProtocolHandler --> FlowCoordinator
-    CLISessionManager --|> SessionManager
-    MCPSessionManager --|> SessionManager
-    FlowCoordinator --> ContextAssembler
-    FlowCoordinator --> ToolExecutor
-    FlowCoordinator --> SessionCache
-    ContextAssembler --> ContextBundle
-    CLIRequestHandler --> ProcessingRequest
-    ProtocolHandler --> ProcessingRequest
-    FlowCoordinator --> FlowResult
+    PluginRegistry --> Plugin
+    PluginRegistry --> CompositionEngine
+    CompositionEngine --> ContextAdapter
+    CompositionEngine --> ToolAdapter
+    CompositionEngine --> EventHandler
+    
+    FunctionalContextEngine --> Context
+    FunctionalContextEngine --> ContextAdapter
+    FunctionalToolRegistry --> Tool
+    FunctionalToolRegistry --> ToolAdapter
+    EventSourcedSession --> SessionEvent
+    SessionEvent --> EventHandler
+    
+    %% Plugin Extensions (Future)
+    RAGContextAdapter ..|> ContextAdapter
+    AgentCoordinator ..|> Plugin
+    AutonomyController ..|> Plugin
     
     %% Styling
-    class CLIRequestHandler {
-        <<Interface Layer>>
+    class PluginRegistry {
+        <<Core Plugin System>>
     }
-    class ProtocolHandler {
-        <<Interface Layer>>
+    class CompositionEngine {
+        <<Core Plugin System>>
     }
-    class FlowCoordinator {
-        <<Orchestration Layer>>
+    class FunctionalContextEngine {
+        <<Functional Processing>>
     }
-    class ContextAssembler {
-        <<Processing Layer>>
+    class FunctionalToolRegistry {
+        <<Functional Processing>>
     }
-    class ToolExecutor {
-        <<Processing Layer>>
-    }
-    class SessionCache {
-        <<Data Layer>>
+    class EventSourcedSession {
+        <<Event Sourcing>>
     }
 ```
 
-## Interface Layer Architecture
-
-> **Component Reference**: [CLI Interface Container Components](component.phase.1.md#cli-interface-container-components) and [MCP Protocol Container Components](component.phase.1.md#mcp-protocol-container-components)
-
-### Request Handler Classes
-
-#### CLIRequestHandler
-**Responsibility**: Handle CLI application requests with session management and context optimization
-
-**Class Attributes**:
-- `currentSession`: Active CLI session reference
-- `contextOptimizer`: CLI-specific context adaptation logic
-- `responseFormatter`: CLI output formatting logic
-
-**Key Operations**:
-- `processRequest(request, session)`: Main request processing workflow
-- `validateInput(input)`: Input validation with CLI-specific rules
-- `routeToCoordinator(request)`: Forward validated requests to flow coordination
-- `optimizeForCLI(context)`: Adapt context for command-line consumption
-
-**Error Handling Responsibilities**:
-- Input validation failures
-- Session management errors
-- Context optimization failures
-- Flow coordination errors
-
-**Performance Requirements**:
-- Request processing: < 50ms
-- Input validation: < 10ms
-- Session operations: < 15ms
-
-#### ProtocolHandler
-**Responsibility**: Handle MCP protocol communication for IDE integrations
-
-**Class Attributes**:
-- `protocolValidator`: MCP specification compliance checker
-- `messageParser`: Protocol message parsing logic
-- `responseSerializer`: MCP response formatting logic
-
-**Key Operations**:
-- `processMessage(message)`: Main MCP message processing
-- `validateProtocol(message)`: MCP specification compliance validation
-- `parseRequest(rawMessage)`: Parse incoming protocol messages
-- `serializeResponse(response)`: Format responses per MCP specification
-
-**Protocol Support**:
-- VS Code Copilot Chat integration
-- Cursor AI Chat integration
-- JSON-RPC message handling
-- Error response formatting
-
-### Session Management Architecture
-
-#### Abstract SessionManager
-**Responsibility**: Define common session lifecycle operations
-
-**Abstract Operations**:
-- `createSession(id, type)`: Session initialization
-- `getSession(id)`: Session retrieval
-- `updateSession(session, data)`: Session state updates
-- `expireSession(id)`: Session cleanup
-
-**Session Lifecycle**:
-1. Creation with validation
-2. Active state management
-3. Periodic updates
-4. Expiration and cleanup
-
-#### CLISessionManager (extends SessionManager)
-**Responsibility**: CLI-specific session management with preferences and optimization
-
-**Specialized Operations**:
-- `optimizeForCLI(session)`: CLI-specific session configuration
-- `handleCLIPreferences(preferences)`: User preference management
-- `trackCLIInteractions(interactions)`: Interaction history management
-
-**CLI-Specific Features**:
-- Command-line preference handling
-- Terminal-friendly context formatting
-- CLI interaction pattern learning
-
-#### MCPSessionManager (extends SessionManager)
-**Responsibility**: IDE session management supporting multiple IDE types
-
-**Specialized Operations**:
-- `handleIDEIntegration(ideType)`: IDE-specific configuration
-- `manageMultipleIDEs(sessions)`: Cross-IDE session coordination
-- `trackToolUsage(toolHistory)`: Tool execution history
-
-**Multi-IDE Support**:
-- VS Code session handling
-- Cursor session handling
-- Cross-IDE state coordination
-- IDE-specific optimizations
-
-## Orchestration Layer Architecture
-
-> **Component Reference**: [Flow Coordinator Container Components](component.phase.1.md#flow-coordinator-container-components)
-
-### FlowCoordinator
-**Responsibility**: Central orchestration hub coordinating all request processing flows
-
-**Class Attributes**:
-- `contextEngine`: Context assembly coordination
-- `toolExecutor`: Tool execution coordination
-- `sessionCache`: Session state coordination
-- `activeFlows`: Currently processing request tracking
-
-**Key Operations**:
-- `routeRequest(request, source)`: Determine processing flow based on request type
-- `coordinateFlow(plan, context)`: Execute coordinated processing sequence
-- `orchestrateComponents(components)`: Manage component interactions
-- `createProcessingPlan(request)`: Analyze request and create execution plan
-
-**Flow Types**:
-- **CLI Flow**: Context assembly → LLM inference → response formatting
-- **MCP Flow**: Tool analysis → tool execution → result integration → response
-
-**Coordination Patterns**:
-- Sequential processing with dependency management
-- Parallel processing where appropriate
-- Error isolation and recovery
-- Performance monitoring and optimization
-
-### RequestRouter
-**Responsibility**: Analyze requests and determine appropriate processing flows
-
-**Key Operations**:
-- `analyzeRequest(request)`: Request type and complexity analysis
-- `determineFlow(requestType)`: Processing flow selection
-- `routeToProcessor(request, target)`: Route to appropriate processor
-
-**Routing Logic**:
-- Request type classification (CLI vs MCP)
-- Complexity assessment
-- Resource requirement analysis
-- Processing priority assignment
-
-## Processing Layer Architecture
-
-> **Component Reference**: [Context Engine Container Components](component.phase.1.md#context-engine-container-components) and [Tool Executor Container Components](component.phase.1.md#tool-executor-container-components)
-
-### ContextAssembler
-**Responsibility**: Intelligent context assembly from multiple sources
-
-**Class Attributes**:
-- `conversationManager`: Conversation history management
-- `workspaceAnalyzer`: Workspace context analysis
-- `semanticSearchEngine`: Document and code search
-- `contextOptimizer`: Token usage optimization
-
-**Key Operations**:
-- `assembleContext(query, session)`: Multi-source context gathering
-- `optimizeTokenUsage(context, limits)`: Token budget management
-- `scoreRelevance(context, query)`: Context relevance assessment
-- `gatherFromSources(sources)`: Parallel source data gathering
-
-**Context Sources**:
-- Conversation history
-- Workspace files and structure
-- Git repository state
-- External documentation
-- Tool execution results
-
-**Optimization Strategies**:
-- Relevance-based prioritization
-- Token count optimization
-- Context window management
-- Performance-aware assembly
-
-### ToolExecutor
-**Responsibility**: Secure tool execution with chain coordination
-
-**Class Attributes**:
-- `toolRegistry`: Available tool catalog
-- `securitySandbox`: Execution security validation
-- `resultIntegrator`: Tool result processing
-- `chainCoordinator`: Multi-tool sequence management
-
-**Key Operations**:
-- `executeChain(tools, context)`: Sequential tool execution with context passing
-- `validateSecurity(tool, context)`: Security policy enforcement
-- `integrateResults(results, context)`: Result integration into context
-- `executeSingleTool(tool, params)`: Individual tool execution
-
-**Security Features**:
-- Tool execution sandboxing
-- Permission validation
-- Resource usage limits
-- Access control enforcement
-
-**Chain Coordination**:
-- Dependency-aware execution order
-- Context passing between tools
-- Error handling and recovery
-- Partial result preservation
-
-## Data Architecture
-
-### Core Data Structures
-
-#### ContextBundle
-**Responsibility**: Comprehensive context data aggregation
-
-**Class Attributes**:
-- `conversationContext`: Dialogue history and patterns
-- `workspaceContext`: File system and project structure
-- `semanticContext`: Search results and related documents
-- `toolContext`: Tool execution history and results
-- `assemblyMetadata`: Context assembly information
-
-**Key Operations**:
-- `getTokenCount()`: Total token usage calculation
-- `getSummary()`: Human-readable context summary
-- `validateCompleteness()`: Context completeness check
-- `optimizeSize(maxTokens)`: Context size optimization
-
-#### ProcessingRequest
-**Responsibility**: Unified request representation across all interfaces
-
-**Class Attributes**:
-- `requestType`: CLI or MCP classification
-- `query`: User query or goal
-- `context`: Assembled context bundle
-- `session`: Session information
-- `timestamp`: Request timestamp
-
-**Key Operations**:
-- `validate()`: Request validation
-- `getComplexity()`: Complexity assessment
-- `getResourceRequirements()`: Resource need analysis
-
-#### FlowResult
-**Responsibility**: Comprehensive processing result representation
-
-**Class Attributes**:
-- `success`: Processing success indicator
-- `responseData`: Result data
-- `executionTime`: Performance metrics
-- `toolsUsed`: Tool execution summary
-- `contextSummary`: Context usage summary
-
-**Key Operations**:
-- `isSuccessful()`: Success status check
-- `getPerformanceMetrics()`: Performance data extraction
-- `getErrorDetails()`: Error information retrieval
-
-## Architectural Patterns
-
-### Design Patterns Applied
-
-#### Strategy Pattern
-- **Context Optimization**: Different strategies for CLI vs MCP context formatting
-- **Session Management**: Different strategies for CLI vs IDE session handling
-- **Tool Execution**: Different strategies based on tool type and security requirements
-
-#### Factory Pattern
-- **Session Creation**: Factory for creating appropriate session types (CLI, VS Code, Cursor)
-- **Request Processing**: Factory for creating request processors based on type
-- **Context Assembly**: Factory for creating context assemblers based on requirements
-
-#### Observer Pattern
-- **Performance Monitoring**: Components observe execution metrics
-- **Session State**: Components observe session state changes
-- **Error Handling**: Components observe error conditions for recovery
-
-#### Command Pattern
-- **Tool Execution**: Tools as command objects with execute() operation
-- **Request Processing**: Requests as command objects with processing logic
-- **Flow Coordination**: Processing steps as command sequences
-
-### Dependency Management
-
-#### Dependency Injection
-- All major components receive dependencies through constructor injection
-- Interface-based dependencies for testability and flexibility
-- Configuration-driven dependency resolution
-
-#### Inversion of Control
-- Abstract interfaces define component contracts
-- Concrete implementations depend on abstractions
-- Configuration manages component wiring
-
-## Quality Attributes
-
-### Performance Architecture
-- **Response Time**: Sub-second response for typical operations
-- **Throughput**: Multiple concurrent session handling
-- **Resource Usage**: Efficient memory and CPU utilization
-- **Scalability**: Linear performance scaling with load
-
-### Security Architecture
-- **Input Validation**: All inputs validated at interface boundaries
-- **Access Control**: Role-based access to tools and data
-- **Sandboxing**: Isolated execution environments for tools
-- **Audit Trail**: Complete operation logging for security review
-
-### Reliability Architecture
-- **Error Isolation**: Component failures don't cascade
-- **Recovery Mechanisms**: Graceful degradation and recovery
-- **State Consistency**: Reliable state management across failures
-- **Monitoring**: Comprehensive health and performance monitoring
-
-### Maintainability Architecture
-- **Separation of Concerns**: Clear component responsibilities
-- **Interface Contracts**: Well-defined component boundaries
-- **Testability**: Architecture supports comprehensive testing
-- **Extensibility**: New components and features easily added
-
-## Implementation Guidance
-
-### Development Phases
-
-#### Phase 2.1: Foundation (Week 1-2)
-1. **Core Data Structures**: ContextBundle, ProcessingRequest, FlowResult
-2. **Abstract Interfaces**: SessionManager, RequestHandler base classes
-3. **Basic Implementations**: CLI and MCP session managers
-4. **Configuration Framework**: Settings and dependency injection setup
-
-#### Phase 2.2: Processing Layer (Week 3-4)
-1. **Flow Coordination**: FlowCoordinator with basic routing
-2. **Context Assembly**: ContextAssembler with multi-source gathering
-3. **Tool Execution**: ToolExecutor with security validation
-4. **Request Processing**: Complete CLI and MCP request handlers
-
-#### Phase 2.3: Advanced Features (Week 5-6)
-1. **Optimization**: Performance monitoring and optimization
-2. **Security**: Advanced sandboxing and security policies
-3. **Error Handling**: Comprehensive error management and recovery
-4. **Monitoring**: Metrics collection and analysis
-
-### Technology Selection Guidance
-
-#### Language Considerations
-- **Object-Oriented**: Architecture requires strong OOP support
-- **Async Support**: Non-blocking I/O for performance
-- **Type System**: Strong typing beneficial for interface contracts
-- **Ecosystem**: Rich ecosystem for web services, databases, AI integration
-
-#### Suitable Languages
-- **Python**: Rich AI/ML ecosystem, excellent for rapid development
-- **Java/Kotlin**: Strong typing, enterprise integration capabilities
-- **TypeScript**: Full-stack development, excellent async support
-- **C#**: Strong typing, excellent async support, rich ecosystem
-- **Go**: Performance, simple concurrency, good for services
-- **Rust**: Performance, memory safety, growing AI ecosystem
-
-#### Framework Considerations
-- **Web Framework**: For MCP protocol handling (REST/JSON-RPC)
-- **Async Framework**: For concurrent request processing
-- **DI Container**: For dependency injection and configuration
-- **Testing Framework**: For comprehensive test coverage
-- **Monitoring Framework**: For performance and health monitoring
-
-## Component Traceability
-
-This class design maintains complete traceability to the component architecture:
-
-| Component (component.phase.1.md) | Class Design Element | Architecture Preserved |
-|----------------------------------|---------------------|----------------------|
-| CLI Request Handler | CLIRequestHandler class | ✅ All operations and responsibilities |
-| Protocol Handler | ProtocolHandler class | ✅ MCP protocol compliance and processing |
-| Flow Coordinator | FlowCoordinator class | ✅ Orchestration and routing logic |
-| Context Assembler | ContextAssembler class | ✅ Multi-source context assembly |
-| Tool Executor | ToolExecutor class | ✅ Security and chain execution |
-| Session Managers | SessionManager hierarchy | ✅ Session lifecycle and specialization |
-
-**Design Integrity**: Every class maintains the architectural decisions, responsibilities, and relationships defined in the component design while remaining language-independent.
-
----
-
-**Architecture Complete**: This class design provides language-independent architectural specifications that can be implemented in any suitable object-oriented programming language while preserving all architectural decisions and design principles. 
+## Core Plugin System Classes
+
+### PluginRegistry Class
+
+**Responsibility**: Central plugin management with functional composition patterns
+
+**Immutable Class Structure**:
+```
+PluginRegistry Class Specification:
+  Internal State (Immutable):
+    - plugins: ImmutableMap<PluginId, Plugin>
+    - dependencies: ImmutableMap<PluginId, DependencyList>
+    - interfaces: ImmutableMap<InterfaceType, PluginList>
+  
+  Operations:
+    - register(plugin: Plugin) → PluginRegistry
+    - unregister(pluginId: PluginId) → PluginRegistry
+    - discover(criteria: DiscoveryCriteria) → Plugin[]
+    - compose(plugins: Plugin[]) → CompositePlugin
+    - validate(plugin: Plugin) → ValidationResult
+    - getPlugin(id: PluginId) → Optional<Plugin>
+    - getByInterface(interfaceType: InterfaceType) → Plugin[]
+    - getDependencies(pluginId: PluginId) → DependencyList
+```
+
+**Functional Implementation Patterns**:
+```
+Plugin Registration Pattern:
+  register(plugin, registry) = validate(plugin) → resolveDependencies(plugin, registry) → updateRegistry(registry, plugin)
+
+Plugin Discovery Pattern:
+  discover(criteria, registry) = filter(matchesCriteria(criteria), getAllPlugins(registry))
+```
+
+### CompositionEngine Class
+
+**Responsibility**: Functional composition of plugin chains and adapters
+
+**Immutable Class Structure**:
+```
+CompositionEngine Class Specification:
+  Internal State (Immutable):
+    - optimizationRules: ImmutableList<OptimizationRule>
+    - compositionCache: ImmutableMap<ChainSignature, ComposedChain>
+  
+  Operations:
+    - composePluginChain(plugins: Plugin[]) → PluginChain
+    - composeAdapters(adapters: Adapter[]) → CompositeAdapter
+    - executeChain(chain: PluginChain, request: MCPRequest) → MCPResponse
+    - optimizeComposition(chain: PluginChain) → OptimizedChain
+    - validateComposition(composition: PluginComposition) → ValidationResult
+    - analyzePerformance(composition: PluginComposition) → PerformanceMetrics
+    - cacheComposition(signature: ChainSignature, chain: ComposedChain) → CompositionEngine
+```
+
+**Functional Composition Patterns**:
+```
+Plugin Chain Composition Pattern:
+  composePluginChain(plugins) = fold(composePlugin, emptyChain, plugins)
+  composePlugin(chain, plugin) = chain.append(validate(plugin))
+
+Adapter Composition Pattern:
+  composeAdapters(adapters) = fold(safeApplyAdapter, input, adapters)
+  safeApplyAdapter(accumulator, adapter) = tryApply(adapter, accumulator) ?? accumulator
+```
+
+## Plugin Interface Classes
+
+### Plugin Interface
+
+**Core Plugin Contract**:
+```
+Plugin Class Specification:
+  Immutable Properties:
+    - name: String (read-only)
+    - version: String (read-only)
+    - interfaces: PluginInterfaceList (read-only)
+    - dependencies: DependencyList (read-only)
+  
+  Operations:
+    - process(request: MCPRequest) → Optional<Enhancement>
+    - initialize(config: PluginConfig) → InitializationResult
+    - validate() → ValidationResult
+    - getCapabilities() → Set<Capability>
+    - getMetadata() → PluginMetadata
+```
+
+**Plugin Implementation Pattern**:
+```
+Plugin Error Isolation Pattern:
+  implementPlugin(logic) = Plugin {
+    process: request → safeExecute(logic.process(request)) ?? Optional.empty()
+    validate: logic.validate
+    getMetadata: logic.getMetadata
+  }
+```
+
+### ContextAdapter Interface
+
+**Context Enhancement Contract**:
+```
+ContextAdapter Class Specification:
+  Immutable Properties:
+    - adapterId: AdapterId (read-only)
+    - priority: AdapterPriority (read-only)
+    - applicableContextTypes: ContextTypeList (read-only)
+  
+  Operations:
+    - adapt(context: Context) → Context
+    - canAdapt(contextType: ContextType) → Boolean
+    - getEnhancementMetadata() → EnhancementMetadata
+    - estimatePerformanceImpact() → PerformanceEstimate
+```
+
+**Functional Adapter Pattern**:
+```
+Context Adapter Pattern:
+  createContextAdapter(logic) = ContextAdapter {
+    adapt: context → if logic.canAdapt(context.type) then logic.enhance(context) else context
+    canAdapt: logic.applicabilityCheck
+    getEnhancementMetadata: logic.getMetadata
+  }
+```
+
+### ToolAdapter Interface
+
+**Tool Enhancement Contract**:
+```
+ToolAdapter Class Specification:
+  Immutable Properties:
+    - adapterId: AdapterId (read-only)
+    - supportedTools: ToolTypeList (read-only)
+    - enhancementCapabilities: CapabilityList (read-only)
+  
+  Operations:
+    - enhance(tool: Tool) → Tool
+    - canEnhance(toolType: ToolType) → Boolean
+    - getEnhancementDescription() → EnhancementDescription
+    - estimateEnhancementImpact() → ImpactEstimate
+```
+
+**Functional Tool Enhancement Pattern**:
+```
+Tool Enhancement Composition:
+  enhanceTool(adapters, tool) = fold(applyAdapter, tool, adapters)
+  applyAdapter(currentTool, adapter) = if adapter.canEnhance(currentTool.type) then adapter.enhance(currentTool) else currentTool
+
+Tool Execution Pattern:
+  executeTool(tool, request) = validateAndEnhanceResult(enhancedTool.executor(request))
+  enhancedTool = applyApplicableAdapters(tool)
+```
+
+## Functional Context Classes
+
+### FunctionalContextEngine Class
+
+**Responsibility**: Immutable context assembly with plugin-extensible adapters
+
+**Immutable Class Structure**:
+```
+FunctionalContextEngine Class Specification:
+  Internal State (Immutable):
+    - contextSources: ImmutableList<ContextSource>
+    - adapters: ImmutableList<ContextAdapter>
+    - optimizer: ContextOptimizer
+    - cache: ImmutableMap<ContextKey, Context>
+  
+  Operations:
+    - assemble(query: Query, session: Session) → Context
+    - enhance(adapters: ContextAdapter[], context: Context) → Context
+    - optimize(constraints: TokenConstraints, context: Context) → Context
+    - compose(contexts: Context[]) → Context
+    - withCache(key: ContextKey, context: Context) → FunctionalContextEngine
+    - invalidateCache(pattern: CachePattern) → FunctionalContextEngine
+```
+
+**Functional Assembly Pattern**:
+```
+Context Assembly Pattern:
+  assembleContext(query, session, sources) = 
+    baseContext ← gatherContextData(sources)
+    queryContext ← analyzeQuery(query)
+    sessionContext ← extractSessionContext(session)
+    composeContexts([baseContext, queryContext, sessionContext])
+
+Context Enhancement Pipeline:
+  enhanceContext(adapters, context) = fold(applyAdapter, context, adapters)
+  applyAdapter(currentContext, adapter) = adapter.adapt(currentContext)
+```
+
+### Context Class
+
+**Responsibility**: Immutable context data with functional transformations
+
+**Immutable Class Structure**:
+```
+Context Class Specification:
+  Immutable Properties:
+    - conversationHistory: ImmutableList<Interaction> (read-only)
+    - workspaceState: WorkspaceSnapshot (read-only)
+    - assemblyMetadata: ContextMetadata (read-only)
+    - tokenCount: Number (read-only)
+    - relevanceScore: Number (read-only)
+  
+  Operations:
+    - compose(other: Context) → Context
+    - transform(transformer: ContextTransformer) → Context
+    - optimize(constraints: TokenConstraints) → Context
+    - enhance(enhancement: ContextEnhancement) → Context
+    - getTokenCount() → Number
+    - getSummary() → ContextSummary
+    - getRelevanceScore(query: Query) → Number
+    - extractMetadata() → ContextMetadata
+```
+
+**Immutable Transformation Pattern**:
+```
+Context Composition Pattern:
+  composeContexts(contexts) = Context.create({
+    conversationHistory: concatenate(map(getConversationHistory, contexts))
+    workspaceState: combineWorkspaceStates(map(getWorkspaceState, contexts))
+    assemblyMetadata: mergeMetadata(map(getAssemblyMetadata, contexts))
+    tokenCount: sum(map(getTokenCount, contexts))
+  })
+
+Context Transformation Pattern:
+  transformContext(transformer, context) = context.update({
+    conversationHistory: transformer.transformHistory(context.conversationHistory)
+    workspaceState: transformer.transformWorkspace(context.workspaceState)
+    assemblyMetadata: transformer.updateMetadata(context.assemblyMetadata)
+  })
+```
+
+## Functional Tool Classes
+
+### FunctionalToolRegistry Class
+
+**Responsibility**: Immutable tool registry with adapter pattern for enhancement
+
+**Immutable Class Structure**:
+```
+FunctionalToolRegistry Class Specification:
+  Internal State (Immutable):
+    - tools: ImmutableMap<ToolId, Tool>
+    - adapters: ImmutableList<ToolAdapter>
+    - executionEngine: ToolExecutionEngine
+    - enhancementCache: ImmutableMap<ToolSignature, EnhancedTool>
+  
+  Operations:
+    - register(tool: Tool) → FunctionalToolRegistry
+    - enhance(adapters: ToolAdapter[], tool: Tool) → Tool
+    - execute(tool: Tool, request: ToolRequest) → ToolResult
+    - chain(tools: Tool[], context: ExecutionContext) → ChainResult
+    - getTool(id: ToolId) → Optional<Tool>
+    - discoverTools(criteria: ToolCriteria) → Tool[]
+    - getAdapters(toolType: ToolType) → ToolAdapter[]
+```
+
+**Functional Tool Enhancement Pattern**:
+```
+Tool Enhancement Composition:
+  enhanceTool(adapters, tool) = fold(applyAdapter, tool, adapters)
+  applyAdapter(currentTool, adapter) = if adapter.canEnhance(currentTool.type) then adapter.enhance(currentTool) else currentTool
+
+Tool Execution Pattern:
+  executeTool(tool, request) = validateAndEnhanceResult(enhancedTool.executor(request))
+  enhancedTool = applyApplicableAdapters(tool)
+```
+
+### Tool Class
+
+**Responsibility**: Immutable tool definition with enhancement capabilities
+
+**Immutable Class Structure**:
+```
+Tool Class Specification:
+  Immutable Properties:
+    - id: ToolId (read-only)
+    - metadata: ToolMetadata (read-only)
+    - executor: Function<ToolRequest, ToolResult> (read-only)
+    - enhancements: ImmutableList<ToolEnhancement> (read-only)
+    - securityConstraints: SecurityConstraints (read-only)
+  
+  Operations:
+    - enhance(adapter: ToolAdapter) → Tool
+    - compose(other: Tool) → CompositeTool
+    - withConstraints(constraints: SecurityConstraints) → Tool
+    - withMetadata(metadata: ToolMetadata) → Tool
+    - canExecute(request: ToolRequest) → Boolean
+    - getCapabilities() → ToolCapabilities
+    - estimateExecutionTime(request: ToolRequest) → TimeEstimate
+```
+
+**Immutable Tool Enhancement Pattern**:
+```
+Tool Enhancement Pattern:
+  enhanceTool(adapter, tool) = tool.update({
+    executor: enhanceExecutor(adapter, tool.executor)
+    enhancements: tool.enhancements.append(adapter.getEnhancement())
+    metadata: updateMetadata(adapter, tool.metadata)
+  })
+
+Enhanced Execution Pattern:
+  enhanceExecutor(adapter, originalExecutor) = request → adapter.postprocessResult(originalExecutor(adapter.preprocessRequest(request)))
+```
+
+## Event Sourcing Classes
+
+### EventSourcedSession Class
+
+**Responsibility**: Immutable session state with event sourcing and plugin-extensible event handling
+
+**Immutable Class Structure**:
+```
+EventSourcedSession Class Specification:
+  Immutable Properties:
+    - sessionId: SessionId (read-only)
+    - events: ImmutableList<SessionEvent> (read-only)
+    - state: SessionState (read-only)
+    - eventHandlers: ImmutableList<EventHandler> (read-only)
+    - lastEventId: EventId (read-only)
+  
+  Operations:
+    - appendEvent(event: SessionEvent) → EventSourcedSession
+    - replayEvents(handlers: EventHandler[]) → EventSourcedSession
+    - reconstructState() → EventSourcedSession
+    - handleEvent(event: SessionEvent) → EventSourcedSession
+    - getCurrentState() → SessionState
+    - getEventHistory() → ImmutableList<SessionEvent>
+    - getEventsSince(eventId: EventId) → ImmutableList<SessionEvent>
+```
+
+**Event Sourcing Pattern**:
+```
+Event Appending Pattern:
+  appendEvent(event, session) = session.update({
+    events: session.events.append(enhanceEvent(session.eventHandlers, event))
+    state: applyEvent(session.state, event)
+    lastEventId: event.eventId
+  })
+
+State Reconstruction Pattern:
+  reconstructState(events) = fold(applyEvent, initialState, events)
+
+Event Enhancement Pattern:
+  enhanceEvent(handlers, event) = fold(processEventHandler, event, handlers)
+  processEventHandler(currentEvent, handler) = handler.handle(currentEvent) ?? currentEvent
+```
+
+### SessionEvent Class
+
+**Responsibility**: Immutable event data with plugin-extensible enhancement
+
+**Immutable Class Structure**:
+```
+SessionEvent Class Specification:
+  Immutable Properties:
+    - eventId: EventId (read-only)
+    - timestamp: Timestamp (read-only)
+    - eventType: EventType (read-only)
+    - payload: EventPayload (read-only)
+    - metadata: EventMetadata (read-only)
+    - enhancements: ImmutableList<EventEnhancement> (read-only)
+  
+  Operations:
+    - enhance(handler: EventHandler) → SessionEvent
+    - withMetadata(metadata: EventMetadata) → SessionEvent
+    - withEnhancement(enhancement: EventEnhancement) → SessionEvent
+    - getPayload() → EventPayload
+    - getTimestamp() → Timestamp
+    - getEnhancements() → ImmutableList<EventEnhancement>
+    - isType(eventType: EventType) → Boolean
+```
+
+**Immutable Event Enhancement Pattern**:
+```
+Event Handler Pattern:
+  enhanceEvent(handler, event) = handler.handle(event) ?? event
+
+Event Metadata Enhancement Pattern:
+  enrichEventMetadata(enhancer, event) = event.update({
+    metadata: enhancer.enrich(event.metadata)
+    enhancements: event.enhancements.append(enhancer.getEnhancement())
+  })
+```
+
+## Plugin Extension Points (Future Phases)
+
+### RAGContextAdapter Class (Phase 2)
+
+**Semantic Context Enhancement**:
+```
+RAGContextAdapter Class Specification:
+  Internal State (Immutable):
+    - semanticSearch: SemanticSearchEngine
+    - vectorDatabase: VectorDatabase
+    - embeddingModel: EmbeddingModel
+  
+  Operations:
+    - adapt(context: Context) → Context
+    - gatherSemanticContext(context: Context) → SemanticContext
+    - findRelevantDocuments(query: Query) → DocumentList
+    - enhanceWithSemantics(context: Context, documents: DocumentList) → Context
+```
+
+### AgentCoordinator Class (Phase 3)
+
+**Multi-Agent Coordination**:
+```
+AgentCoordinator Class Specification:
+  Internal State (Immutable):
+    - agentRegistry: AgentRegistry
+    - taskDistributor: TaskDistributor
+    - coordinationEngine: CoordinationEngine
+  
+  Operations:
+    - process(request: MCPRequest) → Optional<Enhancement>
+    - analyzeTaskComplexity(request: MCPRequest) → TaskAnalysis
+    - createAgentCoordinationPlan(analysis: TaskAnalysis) → AgentPlan
+    - coordinateAgents(plan: AgentPlan) → CoordinationResult
+```
+
+### AutonomyController Class (Phase 4)
+
+**Autonomous Goal Management**:
+```
+AutonomyController Class Specification:
+  Internal State (Immutable):
+    - goalManager: GoalManager
+    - performanceAnalyzer: PerformanceAnalyzer
+    - selfImprovementEngine: SelfImprovementEngine
+  
+  Operations:
+    - process(request: MCPRequest) → Optional<Enhancement>
+    - analyzeCurrentPerformance(request: MCPRequest) → PerformanceMetrics
+    - identifyImprovements(metrics: PerformanceMetrics) → ImprovementOpportunities
+    - createImprovementPlan(opportunities: ImprovementOpportunities) → ImprovementPlan
+    - implementSelfImprovement(plan: ImprovementPlan) → ImplementationResult
+```
+
+## Performance Characteristics
+
+### Plugin-Aware Performance Targets
+- **Plugin Registration**: < 10ms per plugin with interface validation
+- **Function Composition**: < 5ms for plugin chain composition
+- **Immutable Operations**: < 1ms for data structure transformations
+- **Event Processing**: < 5ms for event handler chains
+- **Context Enhancement**: < 20ms for plugin-enhanced context assembly
+
+### Functional Programming Benefits
+- **Memory Efficiency**: Structural sharing reduces memory footprint by 60-80%
+- **Parallelization**: Pure functions enable safe concurrent execution
+- **Predictability**: Immutable state eliminates race conditions
+- **Error Isolation**: Plugin failures contained within functional boundaries
+- **Testing**: Pure functions are easily testable in isolation
+
+### Plugin Extension Impact
+- **Phase 2 RAG**: +50ms typical for semantic context enhancement
+- **Phase 3 sAgents**: +30ms typical for agent coordination overhead
+- **Phase 4 Autonomy**: +100ms typical for autonomous analysis
+- **Combined Phases**: +200ms maximum for full plugin chain execution
+
+**Plugin Interface Specification**:
+```
+Plugin Class Definition:
+  Immutable Properties:
+    - plugin_id: PluginId (read-only)
+    - name: String (read-only)
+    - version: String (read-only)
+    - capabilities: Set<Capability> (read-only)
+  
+  Operations:
+    - process(request: MCPRequest) → Optional<Enhancement>
+    - initialize(config: PluginConfig) → InitializationResult
+    - validate() → ValidationResult
+```
+
+**ContextAdapter Class Specification**:
+```
+ContextAdapter Class Definition:
+  Immutable Properties:
+    - adapter_id: AdapterId (read-only)
+    - name: String (read-only)
+    - priority: Integer (read-only)
+    - target_phases: Set<Phase> (read-only)
+  
+  Operations:
+    - adapt_context(context: Context) → Context
+    - supports_context(context: Context) → Boolean
+    - get_enhancement_metadata() → EnhancementMetadata
+```
+
+**ToolAdapter Class Specification**:
+```
+ToolAdapter Class Definition:
+  Immutable Properties:
+    - adapter_id: AdapterId (read-only)
+    - name: String (read-only)
+    - supported_tools: Set<ToolType> (read-only)
+    - enhancement_type: EnhancementType (read-only)
+  
+  Operations:
+    - enhance_tool(tool: Tool) → Tool
+    - supports_tool(tool: Tool) → Boolean
+    - get_enhancement_info() → EnhancementInfo
+```
