@@ -1,759 +1,518 @@
-# MCP Server - Phase 1 Objectives
+# Phase 1: MCP Server Foundation
 
-> Local LLM Application with MCP-Enhanced Context Continuation  
-> Version: Phase 1.1  
-> Date: June 17, 2025  
-> Status: Foundation Development Phase  
-> Purpose: Context-aware LLM application with agent-like capabilities through tool integration
+> **Plugin-Ready Infrastructure with Functional Design Patterns**  
+> **Architecture Alignment**: Strategic Roadmap Phase 1 + Plugin Architecture for Phases 2-4  
+> **Design Philosophy**: Functional Programming + Adapter Pattern + Plugin System  
+> **Goal**: Extensible foundation enabling clean phase decoupling
 
-## Phase 1 Scope
+## Architecture Context
 
-**Focus**: Local LLM infrastructure with MCP integration for IDE Agent Applications (VS Code Copilot Chat & Cursor AI Chat)
+**This phase implements**:
+- [Strategic Roadmap Phase 1](../architecture/strategic-roadmap.md#phase-1-foundation): Development environment + MCP server infrastructure
+- [MCP Integration Strategy Phase 1](../architecture/mcp-integration-strategy.md#phase-1-core-infrastructure): Core MCP infrastructure and basic tool integration
+- **Plugin Architecture**: Extension points for [Phase 2 RAG](phase.2.md), [Phase 3 sAgents](phase.3.md), [Phase 4 Autonomous](phase.4.md)
 
-**Architecture Context**: This phase implements the core components described in:
-- [MCP Integration Strategy](../architecture/mcp-integration-strategy.md) - Section 2.1: Local MCP Server Foundation
-- [sAgent Architecture](../architecture/sagent-architecture.md) - Section 1: Local LLM Infrastructure
-- [Development Environment](../architecture/development-environment.md) - Section 3: Python Server Setup
+**Design Principles**: 
+- **Functional Programming**: Immutable data, pure functions, composable operations
+- **Plugin Architecture**: Clean extension points without core modification
+- **Adapter Pattern**: Interface abstraction for future enhancements
+- **Separation of Concerns**: Clear boundaries between core and extensions
 
-## Fundamental Objectives
+## Strategic Value
 
-**Primary Goal**: Transform a basic local LLM into a context-aware, tool-enabled development assistant that maintains conversation continuity and exhibits agent-like behaviors without explicit agent architecture.
+### Foundation + Extensibility Design
+**Problem Solved**: Monolithic architectures that require core modifications for new features
 
-**Secondary Goal**: Achieve sophisticated AI assistance through MCP tool integration across multiple IDE environments (VS Code, Cursor) and local CLI applications, enabling rich developer interactions while maintaining architectural simplicity.
+**Solution**: Plugin-ready foundation with functional design patterns enabling:
+- **Clean Extension**: New phases add plugins without modifying core
+- **Functional Composition**: Pure functions and immutable data structures
+- **Interface Abstraction**: Adapter patterns for future enhancement
+- **Independent Deployment**: Each phase can be deployed/tested separately
+
+### Future Phase Enablement
+- **Phase 2**: RAG plugins extend context and tools without core changes
+- **Phase 3**: sAgent plugins add specialized agents via defined interfaces
+- **Phase 4**: Autonomous plugins build on existing patterns
 
 ## Core Objectives
 
-### Objective 1: Context-Enhanced Local LLM Application
+### Objective 1: Plugin-Ready MCP Protocol Foundation
+**Purpose**: MCP server with extension points for future phase plugins
 
-**Purpose**: Build a local LLM application with robust context continuation through MCP-provided capabilities that maintain conversation coherence and user context across interactions.
+**Core Architecture**:
+```
+Architecture Pattern: Request → Plugin Chain → Response
+Data Flow: Immutable Request → [Plugin₁, Plugin₂, ...Pluginₙ] → Enhanced Response
 
-**Behavior**:
-- **Synchronous Response Generation**: Real-time LLM inference with context assembly
-- **Persistent Context Management**: Cross-session conversation and workspace state retention
-- **Tool-Enhanced Context**: Dynamic context enrichment through MCP tool integration
-- **Memory-Aware Processing**: Historical interaction patterns inform current responses
-**Required Capabilities**:
-
-**Context Continuation Operations**:
-- `assembleContext(userQuery, sessionHistory, workspaceState)` - Gather relevant context from multiple sources for LLM processing
-- `persistConversation(interaction, metadata, toolUsage)` - Store interaction data for future context retrieval
-- `retrieveRelevantHistory(currentQuery, sessionId, maxTokens)` - Fetch pertinent past interactions within token limits
-- `manageContextWindow(assembledContext, modelLimits)` - Optimize context to fit within model constraints while preserving relevance
-- `crossSessionContinuity(userId, newSessionQuery)` - Maintain user context across different conversation sessions
-
-**Tool Integration Operations**:
-- `registerMCPTools(toolDefinitions)` - Register available tools with the MCP server for LLM access
-- `executeToolCall(toolName, parameters, contextMetadata)` - Execute tools requested by LLM with proper error handling
-- `integrateToolResults(toolOutput, conversationContext)` - Incorporate tool results back into conversation flow
-- `trackToolUsage(toolName, parameters, results, timestamp)` - Maintain history of tool usage for pattern recognition
-- `coordinateToolChain(toolSequence, sharedContext)` - Enable tools to share context and build upon each other's results
-
-**Model Management Operations**:
-- `loadModel(modelIdentifier, hardwareConstraints)` - Initialize local LLM with hardware-appropriate configuration
-- `switchModel(newModelId, preserveContext)` - Change active model while maintaining conversation continuity
-- `monitorModelPerformance(metrics, thresholds)` - Track model performance and resource usage
-- `optimizeInference(contextSize, responseRequirements)` - Adjust inference parameters for optimal performance
-- `manageModelResources(memoryLimits, concurrentRequests)` - Handle resource allocation for model operations
-
-**Input/Output Contracts**:
-- **assembleContext**: Takes user query (string), session history (array), workspace state (object), returns assembled context (object)
-- **persistConversation**: Takes interaction data (object), metadata (object), tool usage (array), returns success confirmation (boolean)
-- **retrieveRelevantHistory**: Takes current query (string), session ID (string), token limits (number), returns relevant history (array)
-- **manageContextWindow**: Takes assembled context (object), model limits (object), returns optimized context (object)
-- **crossSessionContinuity**: Takes user ID (string), new query (string), returns continuation context (object)
-
-**Error Conditions**:
-- **CONTEXT_ASSEMBLY_FAILED**: Unable to gather required context from available sources
-- **PERSISTENCE_ERROR**: Context storage operation failed due to storage system issues
-- **RETRIEVAL_TIMEOUT**: Context retrieval exceeded maximum allowed time
-- **CONTEXT_OVERFLOW**: Assembled context exceeds model token limits and cannot be optimized
-- **TOOL_EXECUTION_FAILED**: MCP tool call failed during context enhancement
-- **MODEL_UNAVAILABLE**: Requested LLM model cannot be loaded or accessed
-- **MEMORY_EXHAUSTED**: Insufficient system resources for context management operations
-- **SESSION_CORRUPTION**: Session data is corrupted and cannot be used for context continuation
-
-**Side Effects**:
-- **File System Access**: Reads workspace files for context assembly
-- **Database Operations**: Stores and retrieves conversation history and user preferences
-- **Model I/O**: Loads and executes local language models
-- **Memory Usage**: Maintains context caches and conversation state in memory
-
-**Performance Guarantees**:
-- **Context Assembly**: < 500ms for typical workspace contexts
-- **Context Retrieval**: < 200ms for session history lookup
-- **Model Loading**: < 30 seconds for models up to 70B parameters
-- **Tool Integration**: < 100ms overhead per tool call
-- **Memory Usage**: < 2GB RAM for basic context management operations
-
-### Objective 2: IDE Agent Applications Through Tool Ecosystem
-
-**Purpose**: Enable agent-like behavior across multiple IDE environments without explicitly building agent architecture—leveraging MCP's tool ecosystem to give IDE-integrated LLMs expanded capabilities that simulate sophisticated agent functionality.
-
-**Architecture Reference**: Implements the "IDE Integration" and "Tool Ecosystem" components from [MCP Integration Strategy](../architecture/mcp-integration-strategy.md) Section 3.2.
-
-#### Sub-Objective 2A: VS Code Copilot Chat Integration
-
-**Purpose**: Enhance GitHub Copilot Chat with MCP tool orchestration for complex development workflows.
-
-**Required Capabilities**:
-- **VS Code Integration Through MCP**
-  - MCP server registration with VS Code Copilot Chat extension
-  - Real-time bidirectional communication with GitHub's Copilot LLM service
-  - Tool call execution and response handling
-  - Error propagation and user feedback through VS Code interface
-  - Configuration management through VS Code settings and workspace configuration
-
-- **Copilot-Specific Tool Orchestration**
-  - Tool recommendations that complement Copilot's code generation capabilities
-  - Context enhancement for Copilot's existing code understanding
-  - Workflow automation that builds upon Copilot's suggestions
-  - Integration with VS Code's existing developer workflow and extensions
-
-#### Sub-Objective 2B: Cursor AI Chat Integration  
-
-**Purpose**: Enhance Cursor's native AI chat with MCP tool orchestration for advanced development assistance.
-
-**Required Capabilities**:
-- **Cursor Integration Through MCP**
-  - MCP server registration with Cursor's AI chat system
-  - Real-time bidirectional communication with Cursor's LLM service
-  - Tool call execution and response handling within Cursor's interface
-  - Error propagation and user feedback through Cursor's native UI
-  - Configuration management through Cursor's settings and project configuration
-
-- **Cursor-Specific Tool Orchestration**
-  - Tool integration that leverages Cursor's advanced code understanding
-  - Context enhancement for Cursor's multi-file editing capabilities
-  - Workflow automation that complements Cursor's AI-first development approach
-  - Integration with Cursor's composer and chat interfaces
-
-#### Shared Tool Ecosystem for Agent-Like Behavior
-
-**Common Tool Categories**:
-- **File System Access and Manipulation**: Read project files, understand codebase structure, make informed suggestions based on actual code content
-- **Code Analysis and Understanding**: Syntax analysis, dependency tracking, code quality insights to inform development recommendations  
-- **Git Integration and Version Control**: Understand project history, track changes, suggest version control best practices
-- **Terminal Command Execution**: Run development commands, check system status, perform operational tasks
-- **External API Integration**: Expand LLM knowledge beyond training data with real-time information and service integration
-- **Web Search and Information Retrieval**: Supplement responses with current documentation, tutorials, community knowledge
-
-**Context-Rich Tool Integration**:
-- Tools provide context back to IDE LLMs for continuation by returning not just results but metadata about operations, related files, and potential next steps
-- Tool results become part of conversation history, allowing future interactions to reference previous tool usage and build upon established workflows
-- Cross-tool context sharing and correlation enables IDE LLMs to use insights from one tool to inform usage of other tools
-- Tool execution history and pattern recognition allows systems to learn user preferences and suggest increasingly relevant tool usage
-- Workspace-aware tool behavior ensures tool operations are contextually appropriate for current project and development environment
-
-## System Architecture and Data Flow
-
-### System Overview
-The Phase 1 system is fundamentally a local LLM application with enhanced context continuation capabilities, delivered through the Model Context Protocol (MCP). All system features—document processing, knowledge management, file operations, and external integrations—serve the primary purpose of providing rich, persistent context to the LLM for improved conversation continuity.
-
-**Objective 1**: Build a local LLM application with robust context continuation through MCP-provided capabilities. These capabilities include:
-- **Document Access Tools**: Retrieve and analyze files, codebases, and documentation to provide relevant context for current conversations
-- **Knowledge Base Integration**: Search through embeddings and knowledge graphs to find related information from past interactions and stored knowledge
-- **Session Memory Management**: Persist conversation history, user preferences, and interaction patterns across sessions
-- **Workspace Awareness Tools**: Understand project structure, file relationships, and development context to provide contextually appropriate responses
-- **External Data Integration**: Access APIs, databases, and external services to enrich responses with current and relevant information
-
-**How These Aid Context Continuation**: Each capability feeds contextual information back into the LLM's processing, enabling responses that build upon previous conversations, understand the user's specific environment, and maintain coherent long-term interactions rather than treating each request in isolation.
-
-**Objective 2**: Enable agent-like behavior across multiple IDE environments without explicitly building agent architecture—leveraging MCP's tool ecosystem to give IDE-integrated LLMs expanded capabilities. These capabilities include:
-- **Development Tool Integration**: Access to file operations, code analysis, debugging tools, and testing frameworks through MCP tools
-- **Workflow Automation Tools**: Execute multi-step development tasks by chaining tool calls within IDE LLM responses
-- **Real-time Information Access**: Web search, API calls, and live data retrieval to supplement IDE LLM knowledge with current information
-- **Cross-Tool Coordination**: Use results from one tool to inform the parameters and usage of other tools within the same interaction
-- **Environment Manipulation**: Modify files, run commands, manage git operations, and interact with the development environment
-
-**How These Simulate Agent Behavior**: Rather than building explicit planning and execution loops, IDE LLMs (Copilot, Cursor) use MCP tools reactively within their response generation, creating sophisticated behaviors that appear agent-like but are actually enhanced context continuation with tool access.
-
-**MCP's Role**: MCP serves as the universal interface that allows the LLM to access tools, data, and external systems for context enhancement. Rather than building complex agent orchestration, we use MCP to provide the LLM with a rich toolkit that enables sophisticated responses through context continuation rather than multi-step planning. Specifically:
-- **Tool Discovery and Registration**: MCP allows the LLM to discover available tools and understand their capabilities for context gathering
-- **Standardized Tool Interface**: Consistent tool calling mechanism allows the LLM to access diverse capabilities (file system, databases, APIs, external services) through a unified protocol
-- **Context Injection Pipeline**: Tool results are automatically integrated back into the LLM's context window for immediate use in response generation
-- **Session State Management**: MCP handles the persistence of tool usage history and results, contributing to long-term context continuity
-- **Real-time Capability Expansion**: New tools can be added to the MCP server without modifying the LLM, expanding context capabilities dynamically
-
-```mermaid
-graph TB
-    subgraph "IDE Environments"
-        subgraph "VS Code Environment"
-            VSCode[VS Code Editor]
-            CopilotChat[Copilot Chat Extension]
-        end
-        
-        subgraph "Cursor Environment"  
-            Cursor[Cursor Editor]
-            CursorChat[Cursor AI Chat]
-        end
-        
-        Workspace[Developer Workspace]
-    end
-    
-    subgraph "MCP Protocol Layer"
-        MCPServer[MCP Server]
-        ToolRegistry[Tool Registry]
-        SessionMgr[Session Manager]
-    end
-    
-    subgraph "AI Intelligence Layer"
-        LLMEngine[LLM Inference Engine]
-        ModelMgr[Model Manager]
-        ContextEngine[Context Assembly Engine]
-    end
-    
-    subgraph "Knowledge & Storage Layer"
-        VectorDB[(Vector Database)]
-        DocStorage[(Document Storage)]
-        SessionStore[(Session Storage)]
-        KnowledgeGraph[(Knowledge Graph)]
-    end
-    
-    subgraph "Tool Execution Layer"
-        FileTools[File System Tools]
-        CodeTools[Code Analysis Tools]
-        GitTools[Git Integration Tools]
-        APITools[External API Tools]
-        TerminalTools[Terminal Tools]
-    end
-    
-    %% IDE connections
-    VSCode --> CopilotChat
-    CopilotChat <--> MCPServer
-    Cursor --> CursorChat
-    CursorChat <--> MCPServer
-    Workspace --> FileTools
-    
-    %% MCP Layer connections
-    MCPServer --> ToolRegistry
-    MCPServer --> SessionMgr
-    SessionMgr --> SessionStore
-    
-    %% AI Layer connections
-    MCPServer --> LLMEngine
-    LLMEngine --> ModelMgr
-    LLMEngine --> ContextEngine
-    ContextEngine --> VectorDB
-    ContextEngine --> KnowledgeGraph
-    
-    %% Storage connections
-    FileTools --> DocStorage
-    DocStorage --> VectorDB
-    SessionMgr --> SessionStore
-    
-    %% Tool connections
-    LLMEngine --> FileTools
-    LLMEngine --> CodeTools
-    LLMEngine --> GitTools
-    LLMEngine --> APITools
-    LLMEngine --> TerminalTools
-    
-    %% Styling
-    classDef vscode fill:#007acc,color:#fff
-    classDef cursor fill:#000000,color:#fff
-    classDef mcp fill:#4caf50,color:#fff
-    classDef ai fill:#9c27b0,color:#fff
-    classDef storage fill:#ff9800,color:#fff
-    classDef tools fill:#607d8b,color:#fff
-    classDef workspace fill:#795548,color:#fff
-    
-    class VSCode,CopilotChat vscode
-    class Cursor,CursorChat cursor
-    class Workspace workspace
-    class MCPServer,ToolRegistry,SessionMgr mcp
-    class LLMEngine,ModelMgr,ContextEngine ai
-    class VectorDB,DocStorage,SessionStore,KnowledgeGraph storage
-    class FileTools,CodeTools,GitTools,APITools,TerminalTools tools
+Type System:
+  MCPRequest = { method: String, params: JSON, plugins: PluginList }
+  MCPResponse = { result: JSON, metadata: PluginMetadata }
+  
+Plugin Interface Contract:
+  Plugin = {
+    name: String,
+    version: String,
+    process: MCPRequest → Optional<Enhancement>
+  }
+  
+Registry Operations:
+  registerPlugin: Plugin → PluginRegistry → PluginRegistry
+  processWithPlugins: PluginList → MCPRequest → MCPResponse
 ```
 
-### Logical Flow Architecture
-
+**Extension Points**:
 ```
-Developer Request (VS Code Copilot Chat / Cursor AI Chat)
-    ↓
-[MCP Protocol Interface]
-    ↓
-[Request Router & Session Manager]
-    ↓
-[Context Assembly Engine] ← [Memory Systems]
-    ↓                        ↑
-[LLM Inference Engine] ← [Model Manager]
-    ↓                        ↑
-[Tool Execution Engine] → [External Tools/APIs]
-    ↓
-[Response Formatter & Validator]
-    ↓
-[MCP Protocol Response]
-    ↓
-IDE Agent Display (VS Code / Cursor)
+Interface: RequestProcessor
+  Purpose: Phase 2-4 can extend request processing
+  Contract: process_request(request: MCPRequest) → MCPRequest
+  
+Interface: ResponseEnhancer  
+  Purpose: Phase 2-4 can enhance responses
+  Contract: enhance_response(response: MCPResponse, context: Context) → MCPResponse
+
+Interface: ContextAdapter
+  Purpose: Phase 2-4 can provide enhanced context  
+  Contract: adapt_context(base_context: Context) → Context
 ```
 
-```mermaid
-graph TD
-    A[Developer Request<br/>IDE Agent Chat<br/>VS Code Copilot / Cursor AI] --> B[MCP Protocol Interface]
-    B --> C[Request Router & Session Manager]
-    C --> D[Context Assembly Engine]
-    D --> E[LLM Inference Engine]
-    E --> F[Tool Execution Engine]
-    F --> G[Response Formatter & Validator]
-    G --> H[MCP Protocol Response]
-    H --> I[IDE Agent Display<br/>VS Code / Cursor]
-    
-    %% Memory and context flows
-    J[Memory Systems] --> D
-    K[Model Manager] --> E
-    F --> L[External Tools/APIs]
-    
-    %% Styling
-    classDef interface fill:#e1f5fe
-    classDef processing fill:#f3e5f5
-    classDef storage fill:#e8f5e8
-    classDef external fill:#fff3e0
-    
-    class A,I interface
-    class B,H interface
-    class C,D,E,F,G processing
-    class J,K storage
-    class L external
+### Objective 2: Functional Tool Registry with Adapter Pattern
+**Purpose**: Immutable tool registry with adapter interfaces for enhancement
+
+**Functional Design Pattern**:
+```
+Architecture Pattern: Immutable Core + Adapter Chain
+Composition Pattern: Tool → [Adapter₁, Adapter₂, ...Adapterₙ] → Enhanced Tool
+
+Data Structure:
+  Tool = {
+    name: String,
+    schema: Schema,
+    executor: ToolRequest → ToolResult,
+    adapters: AdapterList  // Phase 2-4 extension point
+  }
+  
+Adapter Interface Contract:
+  ToolAdapter = Tool → Tool
+  ToolEnhancer = ToolResult → Context → ToolResult
+  
+Composition Law: 
+  enhanceTool(adapters, tool) = fold(apply, tool, adapters)
 ```
 
-**Logical Flow Explanation**:
-1. **Request Ingestion**: Developer requests arrive via IDE agent chats (VS Code Copilot Chat, Cursor AI Chat) through MCP protocol
-2. **Context Enhancement**: System retrieves relevant context from conversation history, workspace state, and knowledge bases
-3. **LLM Processing with Rich Context**: IDE LLMs (GitHub Copilot, Cursor AI) process requests with assembled context to generate responses
-4. **Tool Access for Context Continuation**: IDE LLMs use MCP tools to gather additional context or perform actions, with results feeding back into the conversation
-5. **Response with Enhanced Context**: Final response incorporates all gathered context and tool results
-6. **Context Persistence**: All interactions, tool usage, and results are stored for future context continuation across IDE environments
-
-### Data Flow Architecture
-
+**Phase Extension Strategy**:
 ```
-[User Workspace Files] → [Document Storage] → [Vector Database]
-         ↓                        ↓                    ↓
-[File System Tools] → [Metadata Extraction] → [Embedding Generation]
-         ↓                        ↓                    ↓
-[Conversation History] → [Session Storage] → [Context Retrieval]
-         ↓                        ↓                    ↓
-[LLM Processing] ← [Context Assembly] ← [Knowledge Graph]
-         ↓                        ↓                    ↓
-[Tool Execution] → [Result Storage] → [Response Cache]
-         ↓                        ↓                    ↓
-[Response Generation] → [Format Validation] → [User Interface]
-```
+Phase 1 Core Tools (Immutable):
+  - Tool("file_read", file_read_executor, [])
+  - Tool("file_write", file_write_executor, [])  
+  - Tool("list_directory", list_dir_executor, [])
+  - Tool("execute_command", exec_cmd_executor, [])
+  - Tool("http_request", http_req_executor, [])
 
-```mermaid
-flowchart TD
-    %% Input Layer
-    A[User Workspace Files] --> B[Document Storage]
-    B --> C[Vector Database]
-    A --> D[File System Tools]
-    B --> E[Metadata Extraction]
-    C --> F[Embedding Generation]
-    
-    %% Processing Layer
-    D --> G[Conversation History]
-    E --> H[Session Storage]
-    F --> I[Context Retrieval]
-    G --> J[LLM Processing]
-    H --> K[Context Assembly]
-    I --> L[Knowledge Graph]
-    
-    %% Execution Layer
-    J --> M[Tool Execution]
-    K --> J
-    L --> K
-    M --> N[Result Storage]
-    K --> O[Response Cache]
-    
-    %% Output Layer
-    M --> P[Response Generation]
-    N --> Q[Format Validation]
-    O --> R[User Interface]
-    P --> Q
-    Q --> R
-    
-    %% Styling
-    classDef input fill:#e3f2fd
-    classDef storage fill:#e8f5e8
-    classDef processing fill:#f3e5f5
-    classDef output fill:#fff8e1
-    
-    class A input
-    class B,C,H,L,N,O storage
-    class D,E,F,G,I,J,K,M processing
-    class P,Q,R output
+Phase 2 Adapter Pattern (Pure Add-On):
+  semantic_adapters = [
+    semantic_search_adapter,    // Enhances file_read with vector search
+    rag_context_adapter,        // Adds document context to tools
+    knowledge_adapter           // Adds workspace knowledge
+  ]
+
+Phase 3 Adapter Pattern (Pure Add-On):
+  agent_adapters = [
+    agent_coordination_adapter, // Adds multi-agent coordination
+    specialization_adapter,     // Adds agent-specific behavior
+    workflow_adapter           // Adds complex workflow support
+  ]
+
+Functional Composition (Core Unchanged):
+  enhanced_tools_p2 = map(enhance_tool(semantic_adapters), core_tools)
+  enhanced_tools_p3 = map(enhance_tool(agent_adapters), enhanced_tools_p2)
 ```
 
-**Data Flow Explanation**:
-1. **Context Ingestion**: Developer files, conversations, and workspace data are ingested and stored
-2. **Context Enhancement**: Documents are processed, embedded, and indexed to enhance future context retrieval
-3. **Context Assembly**: Relevant information is retrieved and assembled for LLM context continuation
-4. **LLM Processing with Tools**: LLM processes context and uses MCP tools to gather additional information or perform actions
-5. **Context Enrichment**: Tool results and interactions become part of the ongoing context
-6. **Context Persistence**: All context, interactions, and results are stored for future conversation continuation
+### Objective 3: Modular LLM Integration with Provider Pattern
+**Purpose**: LLM integration with provider interfaces for future enhancements
 
-### Integration Points and Why They Work Together
+**Provider Architecture Pattern**:
+```
+Interface Contract: LLMProvider
+  submitPrompt: Prompt → Response
+  loadModel: ModelSpec → Model
+  getCapabilities: () → CapabilityList
 
-```mermaid
-graph LR
-    subgraph "Integration Flow"
-        A[Developer Query] --> B[MCP Protocol]
-        B --> C[Session Context]
-        C --> D[Knowledge Retrieval]
-        D --> E[LLM Processing]
-        E --> F[Tool Selection]
-        F --> G[Execution Results]
-        G --> H[Response Synthesis]
-        H --> I[User Delivery]
-    end
-    
-    subgraph "Supporting Systems"
-        J[Vector Search]
-        K[Conversation Memory]
-        L[Model Management]
-        M[File System]
-        N[External APIs]
-    end
-    
-    %% Integration connections
-    D --> J
-    C --> K
-    E --> L
-    F --> M
-    F --> N
-    
-    %% Feedback loops
-    G --> C
-    H --> K
-    I --> A
-    
-    classDef flow fill:#e3f2fd
-    classDef support fill:#f3e5f5
-    
-    class A,B,C,D,E,F,G,H,I flow
-    class J,K,L,M,N support
+Pipeline Composition Pattern:
+  LLMPipeline = {
+    provider: LLMProvider,
+    preprocessors: PreprocessorList,  // Phase 2-4 can add preprocessing
+    postprocessors: PostprocessorList, // Phase 2-4 can add postprocessing
+    contextAdapters: ContextAdapterList // Phase 2-4 can enhance context
+  }
+
+Processing Pattern:
+  processPipeline(pipeline, prompt) = 
+    prompt
+    |> apply_preprocessors(pipeline.preprocessors)  
+    |> pipeline.provider.submitPrompt
+    |> apply_postprocessors(pipeline.postprocessors)
 ```
 
-**1. MCP Protocol as Universal Context Enhancement Interface**
-- **Purpose**: Provides standardized tool access for IDE LLM context continuation across multiple environments
-- **Integration**: Enables IDE LLMs to access rich data sources and capabilities for enhanced responses
-- **Data Flow**: Tools feed context back into IDE LLM conversation history
-- **Why Essential**: Transforms basic IDE LLMs into context-aware systems without complex agent architecture
+**Extension Interfaces**:
+```
+Interface: BaseLLMProvider (Phase 1 Core)
+  submit_prompt(prompt: String, context: BasicContext) → String
+  load_model(model_name: String) → Model
+  get_capabilities() → CapabilityList
 
-**2. Local LLM + Tool Ecosystem for Agent-Like Behavior**
-- **Purpose**: Achieves sophisticated behavior through tool access rather than explicit agent planning
-- **Integration**: Local LLM calls tools through MCP to gather context and perform actions
-- **Data Flow**: Tool results become part of conversation context for future reference
-- **Why Essential**: Provides agent-like capabilities while maintaining simple LLM-centric architecture
+Interface: ContextPreprocessor (Phase 2-4 Extension)
+  Purpose: Phase 2 can add RAG preprocessing, Phase 3 agent context
+  Contract: preprocess_context(context: Context) → Context
 
-**3. IDE Agent Integration + Tool Orchestration**
-- **Purpose**: Enables sophisticated development workflows across multiple IDE environments
-- **Integration**: VS Code Copilot and Cursor AI both use MCP tools for enhanced capabilities
-- **Data Flow**: Tool execution results enhance IDE LLM responses and inform future interactions
-- **Why Essential**: Provides consistent agent-like behavior across different development environments
+Interface: ResponsePostprocessor (Phase 2-4 Extension)  
+  Purpose: Phase 2-4 can add response enhancement
+  Contract: postprocess_response(response: String, context: Context) → String
 
-**4. Context Continuation + Tool Memory**
-- **Purpose**: Maintains sophisticated conversation state across interactions and IDE environments
-- **Integration**: Tool usage history and results become part of persistent context shared across IDEs
-- **Data Flow**: Past tool interactions inform future tool selection and usage regardless of IDE
-- **Why Essential**: Enables learning and improvement of responses over time with cross-IDE continuity
-
-**5. Knowledge Management for Context Enhancement**
-- **Purpose**: Provides rich context sources for both local and IDE LLM responses
-- **Integration**: Vector search and knowledge graphs feed relevant information to all LLM types
-- **Data Flow**: Retrieved knowledge becomes part of LLM context window across environments
-- **Why Essential**: Enables intelligent responses based on accumulated knowledge rather than just current conversation
-
-**6. Multi-IDE Integration as Natural Interface**
-- **Purpose**: Provides seamless developer experience across preferred development environments
-- **Integration**: MCP makes rich capabilities available through familiar chat interfaces in both VS Code and Cursor
-- **Data Flow**: Workspace context flows naturally into IDE LLM conversations regardless of environment
-- **Why Essential**: Reduces friction for developers by supporting their preferred tools while providing consistent AI assistance
-
-### Critical System Dependencies
-
-```mermaid
-graph TD
-    subgraph "Storage Architecture"
-        A[(Document Storage<br/>Files, Metadata)]
-        B[(Vector Database<br/>Embeddings, Search)]
-        C[(Session Storage<br/>Conversations, State)]
-        D[(Knowledge Graph<br/>Entities, Relations)]
-        E[(Cache Layer<br/>Performance)]
-    end
-    
-    subgraph "Processing Pipeline"
-        F[Document Ingestion]
-        G[Embedding Generation]
-        H[Context Assembly]
-        I[LLM Processing]
-        J[Response Generation]
-    end
-    
-    subgraph "Performance Dependencies"
-        K[Hardware Resources]
-        L[Model Selection]
-        M[Memory Management]
-        N[Storage Performance]
-    end
-    
-    %% Storage flows
-    F --> A
-    A --> G
-    G --> B
-    H --> C
-    H --> D
-    J --> E
-    
-    %% Processing flows
-    B --> H
-    C --> H
-    D --> H
-    H --> I
-    I --> J
-    E --> H
-    
-    %% Dependency chains
-    K --> L
-    L --> I
-    M --> I
-    N --> B
-    N --> A
-    
-    classDef storage fill:#4caf50,color:#fff
-    classDef processing fill:#9c27b0,color:#fff
-    classDef performance fill:#ff9800,color:#fff
-    
-    class A,B,C,D,E storage
-    class F,G,H,I,J processing
-    class K,L,M,N performance
+Pipeline Creation Pattern:
+  create_llm_pipeline(
+    provider: BaseLLMProvider,
+    preprocessors: PreprocessorList = [],
+    postprocessors: PostprocessorList = []
+  ) → LLMPipeline
 ```
 
-**Dependency Chain Analysis**:
-1. **Hardware → Model Selection**: GPU availability determines which models can run effectively
-2. **Model Capabilities → Feature Availability**: Model size/quality limits system intelligence
-3. **Storage Performance → Response Time**: Fast storage enables real-time context retrieval
-4. **Memory Management → Concurrent Users**: Efficient memory use determines scalability
-5. **Network Integration → External Capabilities**: API access expands system capabilities beyond local resources
+### Objective 4: Immutable Session Management with Event Sourcing
+**Purpose**: Functional session management with event-driven extension points
 
-**Failure Mode Considerations**:
-- **LLM Failure**: System degrades to basic tool execution without intelligent reasoning
-- **Storage Failure**: System loses conversation continuity but maintains basic functionality
-- **MCP Failure**: System becomes inaccessible from VS Code but core engine remains functional
-- **Tool Failure**: Specific capabilities become unavailable but core conversation continues
+**Event Sourcing Pattern**:
+```
+Event Types (Immutable):
+  SessionCreated { sessionId, userId, timestamp }
+  InteractionRecorded { sessionId, query, response }
+  ContextAssembled { sessionId, context }
+  PluginProcessed { sessionId, pluginName, metadata }
 
-## Feature Requirements (Comprehensive)
+State Reconstruction Pattern:
+  SessionState = fold(apply_event, initial_state, event_list)
+  
+Extension Points:
+  EventHandler = SessionEvent → Optional<SessionEvent>
+  EventProcessor = EventList → Session → Session
+```
 
-### Text Processing & Generation
-- **Document Understanding**
-  - Multi-format document parsing (PDF, DOCX, TXT, MD, HTML)
-  - Content extraction and structure analysis
-  - Metadata extraction and indexing
-  - Document similarity and comparison
-  - Text summarization and key point extraction
+**Plugin Extension Points**:
+```
+Interface: SessionEvent (Immutable Data)
+  event_type: String
+  session_id: String  
+  timestamp: Timestamp
+  data: Map<String, Any>
 
-- **Content Generation**
-  - Code generation across multiple languages
-  - Documentation generation and maintenance
-  - Template-based content creation
-  - Creative writing and brainstorming
+Interface: SessionManager (Core Operations)
+  create_session(user_id: String) → Session
+  record_event(event: SessionEvent) → Void
+  get_session_state(session_id: String) → Session
+  register_event_handler(handler: EventHandler) → Void
 
-### Knowledge Management
-**Architecture Reference**: Implements "Knowledge Layer" from [sAgent Architecture](../architecture/sagent-architecture.md) Section 2.3.
+Interface: EventHandler (Phase 2-4 Extension)
+  Purpose: Phase 2-4 can add event processing without modifying core
+  Contract: handle_event(event: SessionEvent) → Optional<SessionEvent>
 
-- **Vector Database Integration**
-  - Document embedding and storage
-  - Semantic search capabilities
-  - Similarity matching and ranking
-  - Knowledge graph construction
-  - Contextual retrieval and augmentation
+Interface: SessionProjection (Phase 2-4 Extension)
+  Purpose: Phase 2-4 can add different views of session data
+  Contract: project_session(events: EventList) → ProjectionData
 
-- **Information Retrieval**
-  - Web search and content extraction
-  - API integration and data fetching
-  - Database querying and data analysis
-  - Real-time information access
-  - Multi-source data aggregation
+Functional Composition Pattern:
+  process_session_events(
+    events: EventList,
+    handlers: EventHandlerList = []
+  ) = map(apply_handlers(handlers), events)
+```
 
-### Workflow Automation
-- **Task Orchestration**
-  - Multi-step workflow execution
-  - Conditional logic and branching
-  - Error handling and retry mechanisms
-  - Progress tracking and reporting
-  - Workflow templates and reusability
+### Objective 5: Composable Context Assembly with Adapter Pattern
+**Purpose**: Functional context assembly with clean extension interfaces
 
-- **Data Storage & Persistence**
-  - Document storage and indexing
-  - Metadata management and search
-  - Version control and history tracking
-  - Backup and recovery capabilities
-  - Multi-format file support (PDF, DOCX, images, etc.)
+**Functional Context Architecture**:
+```
+Immutable Data Structure:
+  Context = {
+    conversationHistory: InteractionList,
+    workspaceState: WorkspaceInfo,
+    systemContext: SystemInfo,
+    extensionContext: Map<String, Any>  // Phase 2-4 extensions
+  }
 
-- **Vector Database Operations**
-  - Embedding generation and storage
-  - Similarity search and ranking
-  - Collection management and organization
-  - Index optimization and maintenance
-  - Bulk operations and batch processing
+Functional Composition Pattern:
+  ContextAdapter = Context → Context
+  ContextProvider = SessionId → Context  
+  ContextComposer = ProviderList → SessionId → Context
 
-- **Session & State Management**
-  - User session persistence
-  - Conversation history storage
-  - Application state backup/restore
-  - Configuration management
-  - Cache management and optimization
+Composition Law:
+  composeContext(adapters, context) = fold(apply, context, adapters)
+```
 
-### Data Processing
-- **Structured Data Handling**
-  - CSV/JSON/XML processing
-  - Database operations (CRUD)
-  - Data transformation and cleaning
-  - Statistical analysis and reporting
-  - Data visualization preparation
+**Extension Architecture**:
+```
+Core Context Assembly (Phase 1):
+  Context {
+    conversationHistory: get_conversation_history(session_id),
+    workspaceState: get_workspace_state(),
+    systemContext: get_system_info(),
+    extensionContext: {}  // Empty for Phase 1
+  }
 
-- **Unstructured Data Processing**
-  - Image analysis and OCR
-  - Audio/video content processing
-  - Natural language understanding
-  - Entity extraction and classification
-  - Sentiment analysis and emotion detection
+Assembly Function Pattern:
+  assemble_basic_context(
+    session_id: String,
+    adapters: ContextAdapterList = []
+  ) → Context =
+    base_context
+    |> apply_adapters(adapters)
 
-### Memory & Context Management
-**Architecture Reference**: Implements "Memory Management" from [sAgent Architecture](../architecture/sagent-architecture.md) Section 2.4.
+Interface: ContextAdapter (Phase 2-4 Extension)
+  Purpose: Phase 2-4 can add context enhancement without modifying core
+  Contract: adapt_context(context: Context) → Context
 
-- **Conversation Memory**
-  - Long-term conversation history
-  - Context window management
-  - Memory compression and summarization
-  - Selective memory retrieval
-  - Cross-session continuity
+Interface: ContextProvider (Phase 2-4 Extension)  
+  Purpose: Phase 2-4 can add new context sources
+  Contract: provide_context(session_id: String) → Map<String, Any>
 
-- **Knowledge Storage**
-  - Custom knowledge base creation
-  - Fact storage and retrieval
-  - Knowledge graph persistence
-  - User preference storage
-  - Personalization data management
+Phase 2 Example Pattern (Pure Add-On):
+  RAGContextAdapter implements ContextAdapter:
+    adapt_context(context) = 
+      rag_data = rag_service.get_relevant_docs(context.conversationHistory)
+      context.with_extension("rag_context", rag_data)
 
-### Integration Capabilities
-**Architecture Reference**: Implements "External Integration Layer" from [MCP Integration Strategy](../architecture/mcp-integration-strategy.md) Section 4.
+Phase 3 Example Pattern (Pure Add-On):
+  AgentContextAdapter implements ContextAdapter:
+    adapt_context(context) =
+      agent_data = agent_service.get_agent_context(context)  
+      context.with_extension("agent_context", agent_data)
+```
 
-- **External Services**
-  - REST API integration
-  - Webhook handling and triggers
-  - Authentication and authorization
-  - Rate limiting and quota management
-  - Service discovery and monitoring
+## System Architecture
 
-- **Development Tools**
-  - IDE integration (VS Code Copilot Chat, Cursor AI Chat)
-  - Version control system integration
-  - CI/CD pipeline integration
-  - Package manager integration
-  - Testing framework integration
+### Plugin-Ready Architecture
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   Phase 1: Plugin-Ready Foundation              │
+├─────────────────────────────────────────────────────────────────┤
+│  Plugin Registry & Management                                  │
+│  ├── Plugin Loader (Dynamic registration)                      │
+│  ├── Plugin Interface Contracts                               │
+│  └── Plugin Lifecycle Management                              │
+├─────────────────────────────────────────────────────────────────┤
+│  MCP Protocol Core (Immutable)                                 │
+│  ├── Request Processor + Plugin Extension Points              │
+│  ├── Response Builder + Adapter Interfaces                    │
+│  └── Protocol Validation (Pure Functions)                     │
+├─────────────────────────────────────────────────────────────────┤
+│  Tool Registry (Functional + Adapters)                         │
+│  ├── Core Tool Definitions (Immutable)                        │
+│  ├── Tool Adapter Framework                                   │
+│  └── Execution Engine + Enhancement Hooks                     │
+├─────────────────────────────────────────────────────────────────┤
+│  LLM Integration (Provider Pattern)                            │
+│  ├── LLM Provider Interface                                   │
+│  ├── Pipeline Composition (Functional)                        │
+│  └── Extension Points (Pre/Post Processing)                   │
+├─────────────────────────────────────────────────────────────────┤
+│  Session Management (Event Sourcing)                           │
+│  ├── Event Store (Immutable)                                  │
+│  ├── Event Handlers (Extension Points)                        │
+│  └── Session Projections (Functional)                         │
+├─────────────────────────────────────────────────────────────────┤
+│  Context Assembly (Composable)                                 │
+│  ├── Core Context Providers (Pure Functions)                  │
+│  ├── Context Adapter Framework                                │
+│  └── Functional Composition Engine                            │
+└─────────────────────────────────────────────────────────────────┘
 
-### Advanced Features
-- **Code Understanding**
-  - Static code analysis
-  - Dependency graph construction
-  - Code refactoring suggestions
-  - Bug detection and fixing
-  - Performance optimization recommendations
+Extension Interfaces for Phase 2-4:
+├── ContextAdapter     → Phase 2: RAG context enhancement
+├── ToolAdapter        → Phase 2: Semantic tool enhancement  
+├── EventHandler       → Phase 2: Knowledge base events
+├── PluginProvider     → Phase 3: sAgent plugin registration
+├── WorkflowAdapter    → Phase 3: Multi-agent coordination
+└── AutonomyProvider   → Phase 4: Autonomous system plugins
+```
 
-- **Content Analysis**
-  - Plagiarism detection
-  - Content quality assessment
-  - Bias detection and mitigation
-  - Fact checking and verification
-  - Source attribution and citation
+### Functional Data Flow
+```
+Request → Plugin Registry → [Core Processing] → Adapter Chain → Response
+                                     ↓
+Event Store ← Session Events ← Context Assembly ← Tool Execution
+     ↓              ↓                ↓                ↓
+Extension    Extension       Extension      Extension
+Handlers     Projections     Adapters       Adapters
+(Phase 2-4)  (Phase 2-4)     (Phase 2-4)   (Phase 2-4)
+```
 
-## Technical Requirements
+## Technology Stack
 
-### Data Storage Requirements
-**Architecture Reference**: Implements "Data Layer" from [sAgent Architecture](../architecture/sagent-architecture.md) Section 2.2.
+### Core Dependencies (Immutable)
+```python
+# Phase 1 core (never changes in future phases)
+core_dependencies = [
+    "mcp>=1.9.4",                  # MCP protocol (stable)
+    "fastapi>=0.115.13",           # HTTP server (stable)
+    "ollama-python>=0.2.1",        # LLM client (stable)
+    "redis>=5.0.1",                # Session storage (stable)
+    "aiosqlite>=0.19.0",           # Event store (stable)
+    "structlog>=23.2.0",           # Logging (stable)
+    "pydantic>=2.5.0",             # Data validation (stable)
+    "httpx>=0.28.1",               # HTTP client (stable)
+]
 
-- **Document Storage**
-  - Support for 10GB+ document collections
-  - Multi-format file handling (PDF, DOCX, TXT, MD, HTML, images)
-  - Efficient storage with deduplication
-  - Fast retrieval and search capabilities
-  - Metadata indexing and tagging
+# Functional programming support
+fp_dependencies = [
+    "toolz>=0.12.0",               # Functional utilities
+    "functools32>=3.2.3",          # Enhanced functools
+    "immutables>=0.19",            # Immutable data structures
+    "returns>=0.22.0",             # Functional error handling
+]
 
-- **Vector Database**
-  - Store 1M+ document embeddings
-  - Sub-second similarity search
-  - Multiple embedding models support
-  - Collection segmentation and organization
-  - Persistent storage with backup/restore
+# Plugin framework
+plugin_dependencies = [
+    "pluggy>=1.3.0",              # Plugin management
+    "entrypoints>=0.4",            # Plugin discovery
+    "importlib-metadata>=6.0.0",   # Dynamic imports
+]
+```
 
-- **Session Storage**
-  - Conversation history for 1000+ users
-  - Application state persistence
-  - Configuration and preference storage
-  - Cache management (memory + disk)
-  - Log storage and rotation
+### Extension Dependencies (Phase-Specific)
+```python
+# Phase 2 extensions (optional dependencies)
+rag_extensions = [
+    "llamaindex>=0.9.0",           # Document processing
+    "chromadb>=0.4.18",            # Vector database
+    "sentence-transformers>=2.2.2" # Embeddings
+]
 
-- **Knowledge Graph Storage**
-  - Entity and relationship storage
-  - Graph traversal and querying
-  - Schema evolution support
-  - Import/export capabilities
-  - Version control for knowledge updates
+# Phase 3 extensions (optional dependencies)  
+agent_extensions = [
+    "sagent-framework>=1.0.0",     # sAgent development
+    "multi-agent-coord>=1.0.0",    # Agent coordination
+    "workflow-engine>=1.0.0"       # Workflow management
+]
 
-### Performance Standards
-**Architecture Reference**: Performance targets from [Strategic Roadmap](../architecture/strategic-roadmap.md) Section 2.
-
-- **Response Time**: <2 seconds for typical queries
-- **Throughput**: Handle 100+ concurrent requests
-- **Memory Usage**: <4GB RAM for base operation
-- **GPU Utilization**: >80% when GPU available
-- **Uptime**: 99.9% availability during development
-
-### Scalability Requirements
-- **Model Support**: 1B to 70B parameter models
-- **Concurrent Users**: Support 50+ simultaneous users
-- **Data Processing**: Handle GB-scale document collections
-- **Storage Operations**: <100ms for typical read/write operations
-- **Vector Search**: <500ms for similarity queries across 1M+ embeddings
-- **Session Management**: Maintain 1000+ active sessions
-- **Resource Management**: Dynamic resource allocation
-
-### Quality Standards
-- **Accuracy**: >95% for factual queries
-- **Consistency**: Reproducible results with same inputs
-- **Reliability**: Graceful degradation under load
-- **Data Integrity**: Zero data loss with proper backup/recovery
-- **Security**: Secure handling of sensitive data and user information
-- **Observability**: Comprehensive logging and monitoring
+# Phase 4 extensions (optional dependencies)
+autonomy_extensions = [
+    "autonomous-agents>=1.0.0",    # Autonomous systems
+    "self-improvement>=1.0.0",     # Learning systems
+    "dynamic-creation>=1.0.0"      # Dynamic agent creation
+]
+```
 
 ## Success Criteria
 
-### Functional Validation
-- [ ] Successfully load and serve 5+ different LLM models
-- [ ] Complete MCP protocol compliance validation
-- [ ] VS Code Copilot Chat integration working end-to-end
-- [ ] Cursor AI Chat integration working end-to-end
-- [ ] All core features demonstrable with test cases
-- [ ] Performance benchmarks met under typical usage
+### Functional Requirements
+1. ✅ **MCP Compliance**: Full protocol implementation with plugin support
+2. ✅ **Plugin Architecture**: Clean extension points for Phases 2-4
+3. ✅ **Functional Design**: Immutable data structures and pure functions
+4. ✅ **Tool Registry**: Adapter pattern for tool enhancement
+5. ✅ **LLM Integration**: Provider pattern with pipeline composition
 
-### Integration Testing
-- [ ] Real-world development workflow completion
-- [ ] Multi-user concurrent usage validation
-- [ ] Error handling and recovery verification
-- [ ] Resource management under load testing
-- [ ] Security and data privacy compliance
+### Architectural Requirements
+1. ✅ **Decoupling**: Phase 2-4 plugins don't modify Phase 1 core
+2. ✅ **Immutability**: Core data structures are immutable
+3. ✅ **Composability**: Functional composition of adapters and processors
+4. ✅ **Extensibility**: Clean interfaces for future enhancement
+5. ✅ **Testability**: Pure functions enable comprehensive testing
 
-### User Experience
-- [ ] Setup time <10 minutes from fresh installation
-- [ ] Intuitive VS Code Copilot Chat integration experience
-- [ ] Intuitive Cursor AI Chat integration experience
-- [ ] Clear error messages and debugging information
-- [ ] Comprehensive documentation and examples
-- [ ] Developer satisfaction >4.5/5 in testing across both IDE environments
+### Plugin Interface Requirements
+1. ✅ **Context Adapters**: Clean interfaces for context enhancement
+2. ✅ **Tool Adapters**: Pattern for tool capability extension
+3. ✅ **Event Handlers**: Extension points for session management
+4. ✅ **Provider Interfaces**: LLM and service provider abstractions
+5. ✅ **Plugin Registry**: Dynamic plugin loading and management
+
+## Deliverables
+
+### Core Implementation
+- Plugin-ready MCP server with extension interfaces
+- Functional tool registry with adapter pattern
+- Immutable session management with event sourcing
+- Composable context assembly framework
+- LLM integration with provider pattern
+
+### Plugin Framework
+- Plugin registration and lifecycle management
+- Adapter interface definitions
+- Extension point documentation
+- Plugin development guidelines
+- Example plugin implementations
+
+### Phase 2-4 Preparation
+- Documented extension interfaces
+- Plugin development templates
+- Functional composition utilities
+- Testing framework for plugins
+- Migration guides for each phase
 
 ---
 
-**Phase 1 Success Definition**: A developer can install the system, connect it to either VS Code Copilot Chat or Cursor AI Chat (or both), and immediately access all specified capabilities through natural language interaction, with performance meeting the defined standards across both IDE environments.
+**Foundation Complete**: This plugin-ready foundation enables clean decoupling for Phase 2 RAG, Phase 3 sAgents, and Phase 4 autonomous systems through functional programming principles and adapter patterns.
 
-**Next Phase Preview**: Phase 2 will focus on multi-agent coordination, advanced reasoning capabilities, and enterprise-grade deployment features as outlined in [Strategic Roadmap](../architecture/strategic-roadmap.md) Section 3.
+## Performance Specifications
+
+### Response Time Requirements
+- **MCP Protocol Processing**: < 50ms per request
+- **Tool Execution**: < 2s typical, < 10s complex operations
+- **LLM Inference**: < 5s (3B models), < 15s (14B models)  
+- **Session Operations**: < 100ms session management
+- **Context Assembly**: < 500ms typical workspace
+
+### Throughput Targets
+- **Concurrent Sessions**: 50+ active sessions
+- **Tool Executions**: 100+ operations/minute
+- **Memory Usage**: < 2GB base footprint
+- **Model Memory**: 4-8GB VRAM (7B-14B models)
+
+### Component Performance Requirements
+- **Plugin Processing**: < 5ms per plugin in chain
+- **Adapter Composition**: < 1ms per adapter application
+- **Event Handling**: < 10ms per event processing
+- **Context Enhancement**: < 200ms for adapter chain
+- **Functional Composition**: Sub-millisecond for pure functions
+
+## Security Framework
+
+### Tool Execution Security
+- **Sandboxed Execution**: Complete isolation preventing unauthorized access
+- **Input Validation**: Comprehensive sanitization of all tool parameters
+- **Resource Limits**: Configurable memory and CPU constraints per tool
+- **Permission Management**: File access and system operation controls
+- **Audit Logging**: Complete operation tracking for security analysis
+
+### Data Security
+- **Session Isolation**: Complete separation between user sessions
+- **Event Store Security**: Immutable audit trail with integrity verification
+- **Context Data Protection**: Sensitive information filtering and encryption
+- **Plugin Security**: Validated plugin signatures and permission boundaries
+- **Network Security**: TLS encryption for all external communications
+
+### Authentication & Authorization
+- **Session Authentication**: Secure session creation and validation
+- **Plugin Authorization**: Permission-based plugin loading and execution
+- **Tool Access Control**: Role-based access to tool capabilities
+- **API Security**: Rate limiting and access token validation
+- **Configuration Security**: Protected configuration and secrets management
+
+## Quality Attributes
+
+### Reliability Requirements
+- **Uptime**: 99.9% availability target
+- **Error Recovery**: Graceful degradation and automatic recovery
+- **Data Durability**: Session persistence with backup and recovery
+- **Plugin Isolation**: Plugin failures don't affect core system
+- **Crash Recovery**: Automatic service restart and state restoration
+
+### Maintainability Requirements
+- **Plugin Architecture**: Clean separation enabling independent updates
+- **Functional Design**: Pure functions enabling comprehensive testing
+- **Interface Contracts**: Well-defined interfaces for extension points
+- **Documentation**: Complete API and extension documentation
+- **Monitoring**: Comprehensive logging and performance metrics
+
+### Scalability Requirements
+- **Horizontal Scaling**: Plugin architecture supports distributed deployment
+- **Resource Efficiency**: Linear performance scaling with load
+- **Memory Management**: Efficient memory usage with automatic cleanup
+- **Storage Scaling**: Event store supports growing data volumes
+- **Network Efficiency**: Optimized communication protocols
