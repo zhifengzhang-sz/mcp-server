@@ -158,7 +158,7 @@ We provide a production-ready `flake.nix` in the Python server directory. Here's
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    # ... (see qi/python/server/flake.nix for complete implementation)
+    # ... (see flake.nix for complete implementation)
 }
 ```
 
@@ -170,7 +170,7 @@ We provide a production-ready `flake.nix` in the Python server directory. Here's
 - ✅ GPU detection and status reporting
 - ✅ Clear separation of concerns
 
-**See**: [`qi/python/server/flake.nix`](../../qi/python/server/flake.nix) for the complete implementation.
+**See**: [`flake.nix`](../../flake.nix) for the complete implementation.
 
 #### Mirror Setup for Nix (China)
 
@@ -187,7 +187,7 @@ EOF
 
 ```bash
 # Enter development environment
-cd qi/python/server
+cd mcp-server
 nix develop
 
 # Or for specific shell
@@ -196,7 +196,7 @@ nix develop --command zsh
 
 **Real-World Example:**
 ```bash
-$ cd qi/python/server
+$ cd mcp-server
 $ nix develop
 🚀 QiCore Agent Orchestration Platform - Development Environment
 📦 Package Management: uv (fast, modern Python package manager)
@@ -254,7 +254,7 @@ rm -f ~/.config/uv/pip.conf
 
 ```bash
 # In Nix environment
-cd qi/python/server
+cd mcp-server
 nix develop
 
 # Check Python version (should be from Nix)
@@ -513,7 +513,7 @@ Here's a real-world example of the complete development workflow:
 ```bash
 # 1. Clone and enter project
 git clone <repository-url>
-cd qi-v2-llm/qi/python/server
+cd mcp-server
 
 # 2. Enter Nix environment (provides system libs + Python + uv)
 nix develop
@@ -541,11 +541,11 @@ ollama pull qwen2.5:7b      # 4.4GB, better quality
 uv run python -m mcp_server.main_fastmcp
 # Server running on http://localhost:8000
 
-# 8. In another terminal, test the agent
-cd qi/python/server
+# 8. In another terminal, test the implementation
+cd mcp-server
 nix develop  # Enter same environment
 source env/mirrors.sh china  # Apply same mirrors
-uv run python document_verification_agent.py
+uv run python -m mcp_server
 
 # 9. Development workflow
 uv add pydantic-ai  # Add new dependency

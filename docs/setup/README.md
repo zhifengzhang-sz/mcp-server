@@ -63,7 +63,7 @@ cd mcp-server
 After setup completes:
 
 1. **Read the Architecture**: [sAgent Architecture](../architecture/sagent-architecture.md)
-2. **Explore the Agent**: [Document Verification Agent](../../document_verification_agent.py)
+2. **Review the Implementation**: [MCP Server Structure](../../mcp_server/)
 3. **Study the Patterns**: [MCP Integration Strategy](../architecture/mcp-integration-strategy.md)
 4. **Check the Roadmap**: [Strategic Development Plan](../architecture/strategic-roadmap.md)
 

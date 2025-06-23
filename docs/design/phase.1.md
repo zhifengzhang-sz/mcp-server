@@ -1,4 +1,4 @@
-# qi/python/server - Phase 1 Design
+# MCP Server - Phase 1 Design
 
 > Context-Enhanced Local LLM with MCP Tool Integration  
 > Version: Phase 1.0  

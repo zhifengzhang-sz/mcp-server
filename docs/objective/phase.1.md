@@ -1,4 +1,4 @@
-# qi/python/server - Phase 1 Objectives
+# MCP Server - Phase 1 Objectives
 
 > Local LLM Application with MCP-Enhanced Context Continuation  
 > Version: Phase 1.1  
