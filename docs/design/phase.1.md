@@ -35,7 +35,13 @@
    - Tool Executor Components
    - LLM Interface Components
 
-4. **[Logical Flow Analysis](flow.phase.1.md)** - Interaction patterns and flows
+4. **[C4: Class Design](classes.phase.1.md)** - Code-level implementation design
+   - Interface Layer Classes
+   - Orchestration Layer Classes
+   - Processing Layer Classes
+   - Core Data Models
+
+5. **[Logical Flow Analysis](flow.phase.1.md)** - Interaction patterns and flows
    - Objective 1: CLI Context-Enhanced Local LLM Flow
    - Objective 2: VS Code Agent-Like Behavior Flow
    - CLI-Specific Interaction Patterns
@@ -49,8 +55,8 @@ The design follows the C4 model hierarchy:
 C1 (Context) → C2 (Container) → C3 (Component) → C4 (Code)
 ```
 
-**Current Status**: C1-C3 complete with comprehensive specifications  
-**Next Phase**: Implementation planning and technology mapping
+**Current Status**: C1-C4 complete with comprehensive specifications  
+**Next Phase**: Direct implementation using class specifications
 
 ## Architecture Summary
 
@@ -83,6 +89,7 @@ docs/design/
 ├── context.phase.1.md       # C1: Context diagrams and external relationships
 ├── container.phase.1.md     # C2: Container architecture and specifications
 ├── component.phase.1.md     # C3: Component design and interfaces
+├── classes.phase.1.md       # C4: Class design and implementation specifications
 └── flow.phase.1.md          # Logical flow analysis and interaction patterns
 ```
 
@@ -90,14 +97,15 @@ docs/design/
 
 - **Start Here**: [C1: Context Diagram](context.phase.1.md) - Understanding system context
 - **Architecture**: [C2: Container Diagram](container.phase.1.md) - High-level system structure
-- **Implementation**: [C3: Component Diagrams](component.phase.1.md) - Detailed component design
+- **Components**: [C3: Component Diagrams](component.phase.1.md) - Detailed component design
+- **Implementation**: [C4: Class Design](classes.phase.1.md) - Code-level implementation specifications
 - **Interactions**: [Logical Flow Analysis](flow.phase.1.md) - How components work together
 
 ---
 
 **Design Status**: Complete C4 model documentation with comprehensive specifications  
-**Total Documentation**: ~2,100 lines across 5 focused files  
-**Enhancement**: Enhanced Objective 1 (CLI) to match Objective 2 (VS Code) quality and detail
+**Total Documentation**: ~3,000+ lines across 6 focused files  
+**Implementation Ready**: Full C1-C4 design with class specifications for direct implementation
 
 The system supports two primary objectives through distinct interaction patterns:
 
@@ -2172,4 +2180,4 @@ User Notification → Alternative Functionality → Full Service Restoration
 ---
 
 **Design Status**: C4 Component diagrams complete with comprehensive interface and behavioral specifications
-**Next Phase**: Implementation planning and technology mapping
+**Next Phase**: Direct implementation using class specifications
