@@ -1,0 +1,31 @@
+{
+    "folders": [
+        {
+            "name": "MCP Server (Main)",
+            "path": ".."
+        },
+        {
+            "name": "QICORE-V4 (Submodule)",
+            "path": "../qicore-v4"
+        }
+    ],
+    "settings": {
+        "git.detectSubmodules": true,
+        "git.fetchOnPull": true,
+        "git.autofetch": true,
+        "files.exclude": {
+            "**/node_modules": true,
+            "**/.git": false
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-vscode.vscode-json",
+            "redhat.vscode-yaml",
+            "yzhang.markdown-all-in-one",
+            "davidanson.vscode-markdownlint"
+        ]
+    }
+} 
