@@ -80,6 +80,7 @@ mcp-server/
 - **[context.phase.1.md](design/context.phase.1.md)** - C1: System context and external relationships
 - **[container.phase.1.md](design/container.phase.1.md)** - C2: High-level container architecture
 - **[component.phase.1.md](design/component.phase.1.md)** - C3: Detailed component design
+- **[classes.phase.1.md](design/classes.phase.1.md)** - C4: Class design and implementation specifications
 - **[flow.phase.1.md](design/flow.phase.1.md)** - Logical flow analysis and interaction patterns
 
 ## Development Workflow
