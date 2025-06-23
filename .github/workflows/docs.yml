@@ -1,0 +1,41 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check documentation structure
+      run: |
+        # Verify key documentation files exist
+        test -f README.md
+        test -f docs/README.md
+        test -f docs/objective/phase.1.md
+        test -d docs/design
+        test -d docs/architecture
+        test -d docs/setup
+        echo "✅ Documentation structure validated"
+    
+    - name: Validate markdown links
+      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        use-verbose-mode: 'yes'
+        config-file: '.github/workflows/mlc_config.json'
+
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Lint markdown files
+      uses: DavidAnson/markdownlint-cli2-action@v16
+      with:
+        globs: '**/*.md' 
