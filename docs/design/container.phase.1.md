@@ -146,8 +146,8 @@ graph TB
 ```
 PluginRegistry Operations:
   - register(plugin: Plugin) → PluginRegistry
-  - discover(interface: PluginInterface) → Plugin[]
-  - compose(plugins: Plugin[]) → (request: MCPRequest) → MCPResponse
+  - unregister(pluginId: PluginId) → PluginRegistry
+  - discover(criteria: DiscoveryCriteria) → Plugin[]
   - validate(plugin: Plugin) → ValidationResult
 ```
 
@@ -159,9 +159,10 @@ PluginRegistry Operations:
 
 ```
 PluginOrchestrator Operations:
+  - compose(plugins: Plugin[]) → CompositePlugin
   - executeChain(plugins: Plugin[], request: MCPRequest) → MCPResponse
+  - optimizeChain(plugins: Plugin[]) → Plugin[]
   - isolateErrors(pluginResult: PluginResult) → SafeResult  
-  - composeAdapters(adapters: Adapter[]) → CompositeAdapter
   - trackPerformance(execution: PluginExecution) → PerformanceMetrics
 ```
 
@@ -175,9 +176,9 @@ PluginOrchestrator Operations:
 
 ```
 FunctionalContextEngine Operations:
-  - assemble(sources: ContextSource[]) → Context
+  - assemble(query: Query, session: Session) → Context
   - enhance(adapters: ContextAdapter[], context: Context) → Context
-  - optimize(constraints: TokenConstraints, context: Context) → Context
+  - optimize(context: Context, constraints: PerformanceConstraints) → Context
   - compose(contexts: Context[]) → Context
 ```
 
@@ -191,7 +192,7 @@ FunctionalContextEngine Operations:
 FunctionalToolRegistry Operations:
   - register(tool: Tool) → ToolRegistry
   - enhance(adapters: ToolAdapter[], tool: Tool) → Tool
-  - execute(tool: Tool, request: ToolRequest) → ToolResult
+  - execute(tool: Tool, parameters: ToolParameters) → ToolResult
   - chain(tools: Tool[], context: ExecutionContext) → ToolResult
 ```
 
@@ -206,7 +207,9 @@ EventSourcedSessions Operations:
   - createSession(id: SessionId) → Session
   - appendEvent(session: Session, event: SessionEvent) → Session
   - reconstructState(events: SessionEvent[]) → SessionState
-  - handleEvent(handlers: EventHandler[], event: SessionEvent) → SessionEvent
+  - handle(event: SessionEvent) → Optional<SessionEvent>
+  - dispatch(event: SessionEvent) → EventResult
+  - persist(session: Session) → SessionState
 ```
 
 **LLM Interface Container**

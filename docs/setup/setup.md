@@ -5,9 +5,12 @@
 ## 🎯 Quick Start (Any User, Any Location)
 
 ```bash
-# Clone repository
-git clone https://github.com/zhifengzhang-sz/mcp-server.git
+# Clone repository with submodules
+git clone --recursive https://github.com/zhifengzhang-sz/mcp-server.git
 cd mcp-server
+
+# If you already cloned without --recursive, initialize submodules:
+# git submodule init && git submodule update
 
 # One-command setup (detects your location automatically)
 ./env/setup.sh
@@ -62,7 +65,7 @@ nix develop
 source env/mirrors.sh china  # or global
 
 # 3. Start developing
-uv run python -m mcp_server.main_fastmcp
+uv run python -m mcp_server.main
 
 # 4. Add dependencies as needed
 uv add package-name
@@ -178,7 +181,7 @@ After running `./env/setup.sh`, you should have:
 cd mcp-server
 ./env/setup.sh china           # Setup with China mirrors
 nix develop                    # Enter development environment
-uv run python -m mcp_server.main_fastmcp  # Start server
+uv run python -m mcp_server.main  # Start server
 ```
 
 ### Adding New Dependencies

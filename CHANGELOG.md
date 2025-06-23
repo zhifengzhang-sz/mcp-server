@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Python 3.12+ project structure with pyproject.toml
 - Nix flake for reproducible development environment
 - uv for fast Python package management
-- FastMCP, Chroma, and RAG integration dependencies
+- Official MCP SDK, Chroma, and RAG integration dependencies
 - Comprehensive .gitignore for Python/Nix/IDE files
 - Markdown linting and link checking workflows
 

@@ -27,6 +27,8 @@ dependencies = [
     "pydantic>=2.5.0",               # Data validation
     "httpx>=0.28.1",                 # Async HTTP client
     "python-dotenv>=1.0.0",          # Configuration
+    "typer>=0.12.0",                 # Modern CLI framework
+    "jinja2>=3.1.2",                 # Template processing
     
     # Functional Programming Support
     "toolz>=0.12.0",                 # Functional utilities

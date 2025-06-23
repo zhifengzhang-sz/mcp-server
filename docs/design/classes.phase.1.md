@@ -194,7 +194,6 @@ PluginRegistry Class Specification:
     - register(plugin: Plugin) → PluginRegistry
     - unregister(pluginId: PluginId) → PluginRegistry
     - discover(criteria: DiscoveryCriteria) → Plugin[]
-    - compose(plugins: Plugin[]) → CompositePlugin
     - validate(plugin: Plugin) → ValidationResult
     - getPlugin(id: PluginId) → Optional<Plugin>
     - getByInterface(interfaceType: InterfaceType) → Plugin[]
@@ -222,10 +221,9 @@ CompositionEngine Class Specification:
     - compositionCache: ImmutableMap<ChainSignature, ComposedChain>
   
   Operations:
-    - composePluginChain(plugins: Plugin[]) → PluginChain
-    - composeAdapters(adapters: Adapter[]) → CompositeAdapter
-    - executeChain(chain: PluginChain, request: MCPRequest) → MCPResponse
-    - optimizeComposition(chain: PluginChain) → OptimizedChain
+    - compose(plugins: Plugin[]) → CompositePlugin
+    - executeChain(plugins: Plugin[], request: MCPRequest) → MCPResponse
+    - optimizeChain(plugins: Plugin[]) → Plugin[]
     - validateComposition(composition: PluginComposition) → ValidationResult
     - analyzePerformance(composition: PluginComposition) → PerformanceMetrics
     - cacheComposition(signature: ChainSignature, chain: ComposedChain) → CompositionEngine
@@ -346,7 +344,7 @@ FunctionalContextEngine Class Specification:
   Operations:
     - assemble(query: Query, session: Session) → Context
     - enhance(adapters: ContextAdapter[], context: Context) → Context
-    - optimize(constraints: TokenConstraints, context: Context) → Context
+    - optimize(context: Context, constraints: PerformanceConstraints) → Context
     - compose(contexts: Context[]) → Context
     - withCache(key: ContextKey, context: Context) → FunctionalContextEngine
     - invalidateCache(pattern: CachePattern) → FunctionalContextEngine
@@ -425,9 +423,9 @@ FunctionalToolRegistry Class Specification:
     - enhancementCache: ImmutableMap<ToolSignature, EnhancedTool>
   
   Operations:
-    - register(tool: Tool) → FunctionalToolRegistry
+    - register(tool: Tool) → ToolRegistry
     - enhance(adapters: ToolAdapter[], tool: Tool) → Tool
-    - execute(tool: Tool, request: ToolRequest) → ToolResult
+    - execute(tool: Tool, parameters: ToolParameters) → ToolResult
     - chain(tools: Tool[], context: ExecutionContext) → ChainResult
     - getTool(id: ToolId) → Optional<Tool>
     - discoverTools(criteria: ToolCriteria) → Tool[]
@@ -502,7 +500,9 @@ EventSourcedSession Class Specification:
     - appendEvent(event: SessionEvent) → EventSourcedSession
     - replayEvents(handlers: EventHandler[]) → EventSourcedSession
     - reconstructState() → EventSourcedSession
-    - handleEvent(event: SessionEvent) → EventSourcedSession
+    - handle(event: SessionEvent) → Optional<SessionEvent>
+    - dispatch(event: SessionEvent) → EventResult
+    - persist(session: Session) → SessionState
     - getCurrentState() → SessionState
     - getEventHistory() → ImmutableList<SessionEvent>
     - getEventsSince(eventId: EventId) → ImmutableList<SessionEvent>

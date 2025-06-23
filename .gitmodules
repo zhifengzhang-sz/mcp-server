@@ -1,0 +1,3 @@
+[submodule "qicore-v4"]
+	path = qicore-v4
+	url = git@github.com:zhifengzhang-sz/QICORE-V4.git

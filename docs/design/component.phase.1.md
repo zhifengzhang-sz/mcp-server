@@ -93,11 +93,11 @@ graph TB
 **Interface Contract**:
 ```
 PluginManager Operations:
-  - registerPlugin(plugin: Plugin) → RegistrationResult
-  - unregisterPlugin(pluginId: PluginId) → UnregistrationResult
-  - discoverPlugins(criteria: DiscoveryCriteria) → Plugin[]
+  - register(plugin: Plugin) → PluginRegistry
+  - unregister(pluginId: PluginId) → PluginRegistry
+  - discover(criteria: DiscoveryCriteria) → Plugin[]
   - getPluginMetadata(pluginId: PluginId) → PluginMetadata
-  - validatePlugin(plugin: Plugin) → ValidationResult
+  - validate(plugin: Plugin) → ValidationResult
 ```
 
 **Functional Implementation Pattern**:
@@ -118,10 +118,9 @@ Plugin Discovery Pattern:
 **Interface Contract**:
 ```
 CompositionEngine Operations:
-  - composePluginChain(plugins: Plugin[]) → PluginChain
-    - composeAdapters(adapters: Adapter[]) → CompositeAdapter
-  - executeChain(chain: PluginChain, request: MCPRequest) → MCPResponse
-  - optimizeComposition(chain: PluginChain) → OptimizedChain
+  - compose(plugins: Plugin[]) → CompositePlugin
+  - executeChain(plugins: Plugin[], request: MCPRequest) → MCPResponse
+  - optimizeChain(plugins: Plugin[]) → Plugin[]
 ```
 
 **Functional Composition Patterns**:
@@ -228,9 +227,9 @@ graph TB
 **Interface Contract**:
 ```
 ContextAssembler Operations:
-  - assembleContext(query: Query, session: Session) → Context
-  - gatherFromSources(sources: ContextSource[]) → ContextData
-  - applyAdapterChain(adapters: ContextAdapter[], context: Context) → Context
+  - assemble(query: Query, session: Session) → Context
+  - enhance(adapters: ContextAdapter[], context: Context) → Context
+  - optimize(context: Context, constraints: PerformanceConstraints) → Context
   - recordAssemblyEvent(assembly: ContextAssembly) → AssemblyEvent
 ```
 ```
@@ -366,10 +365,10 @@ graph TB
 **Interface Contract**:
 ```
 ToolManager Operations:
-  - registerTool(tool: Tool) → RegistrationResult
-  - enhanceTool(tool: Tool, adapters: ToolAdapter[]) → EnhancedTool
+  - register(tool: Tool) → ToolRegistry
+  - enhance(adapters: ToolAdapter[], tool: Tool) → Tool
+  - execute(tool: Tool, parameters: ToolParameters) → ToolResult
   - discoverTools(criteria: ToolCriteria) → Tool[]
-  - executeTool(tool: Tool, params: ToolParams, context: Context) → ToolResult
 ```
 
 **Functional Tool Enhancement Pattern**:

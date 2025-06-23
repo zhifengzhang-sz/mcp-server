@@ -211,7 +211,7 @@ Quick start:
   uv sync                         # Install Python dependencies (FAST!)
   ollama serve                    # Start Ollama (auto-detects GPU)
   ollama pull llama3.2:3b        # Download recommended model
-  uv run python -m mcp_server.main_fastmcp  # Run MCP server
+  uv run python -m mcp_server.main  # Run MCP server
 ```
 
 ### 2. uv Setup
@@ -264,7 +264,7 @@ python --version  # Python 3.12.7
 uv sync
 
 # Run application
-uv run python -m mcp_server.main_fastmcp
+uv run python -m mcp_server.main
 
 # Add new dependencies
 uv add fastapi uvicorn
@@ -538,7 +538,7 @@ ollama pull llama3.2:3b     # 2.0GB, good for development
 ollama pull qwen2.5:7b      # 4.4GB, better quality
 
 # 7. Run the MCP server
-uv run python -m mcp_server.main_fastmcp
+uv run python -m mcp_server.main
 # Server running on http://localhost:8000
 
 # 8. In another terminal, test the implementation

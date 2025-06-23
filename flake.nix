@@ -88,7 +88,7 @@
             echo "  uv sync                         # Install Python dependencies (FAST!)"
             echo "  ollama serve                    # Start Ollama (auto-detects GPU)"
             echo "  ollama pull llama3.2:3b        # Download recommended model"
-            echo "  uv run python -m mcp_server.main_fastmcp  # Run MCP server"
+            echo "  uv run python -m mcp_server.main  # Run MCP server"
             echo ""
             echo "Development:"
             echo "  uv add <package>               # Add new dependency"

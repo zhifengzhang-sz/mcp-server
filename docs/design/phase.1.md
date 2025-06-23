@@ -281,3 +281,60 @@ Plugin Framework:
 **Objective Alignment Complete**: All 5 core objectives explicitly mapped to design implementation
 **Design Consistency Verified**: Cross-document consistency confirmed across all C1-C4 levels
 **Extension Readiness**: Plugin interfaces ready for Phase 2-4 implementation
+
+## Unified Interface Contracts
+
+> **CRITICAL**: These canonical interface contracts must be implemented consistently across Container, Component, and Class levels. Any deviation creates implementation ambiguity.
+
+### Core Plugin Interface Contract
+
+**Plugin Registration Operations:**
+```
+register(plugin: Plugin) → PluginRegistry
+unregister(pluginId: PluginId) → PluginRegistry  
+discover(criteria: DiscoveryCriteria) → Plugin[]
+validate(plugin: Plugin) → ValidationResult
+```
+
+**Plugin Composition Operations:**
+```
+compose(plugins: Plugin[]) → CompositePlugin
+executeChain(plugins: Plugin[], request: MCPRequest) → MCPResponse
+optimizeChain(plugins: Plugin[]) → Plugin[]
+```
+
+### Context Assembly Interface Contract
+
+**Context Operations:**
+```
+assemble(query: Query, session: Session) → Context
+enhance(adapters: ContextAdapter[], context: Context) → Context
+optimize(context: Context, constraints: PerformanceConstraints) → Context
+```
+
+### Tool Registry Interface Contract
+
+**Tool Management Operations:**
+```
+register(tool: Tool) → ToolRegistry
+enhance(adapters: ToolAdapter[], tool: Tool) → Tool
+execute(tool: Tool, parameters: ToolParameters) → ToolResult
+```
+
+### Session Management Interface Contract
+
+**Event Handling Operations:**
+```
+handle(event: SessionEvent) → Optional<SessionEvent>
+dispatch(event: SessionEvent) → EventResult
+persist(session: Session) → SessionState
+```
+
+### Type Definitions (Canonical)
+
+**Core Types:**
+- `PluginId` = String (UUID format)
+- `DiscoveryCriteria` = { interface?: String, tags?: String[], version?: String }
+- `ValidationResult` = { isValid: Boolean, errors: String[], warnings: String[] }
+- `CompositePlugin` = Plugin with composed behavior
+- `EventResult` = { handled: Boolean, propagate: Boolean, result?: Any }

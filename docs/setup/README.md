@@ -5,9 +5,12 @@
 **For AI Agent Development & Model Context Protocol:**
 
 ```bash
-# Clone repository
-git clone https://github.com/zhifengzhang-sz/mcp-server.git
+# Clone repository with submodules
+git clone --recursive https://github.com/zhifengzhang-sz/mcp-server.git
 cd mcp-server
+
+# If you already cloned without --recursive, initialize submodules:
+# git submodule init && git submodule update
 
 # One-command setup (auto-detects your location)
 ./env/setup.sh
@@ -73,7 +76,7 @@ After setup completes:
 For other agent development approaches:
 - **MCP Specification**: [Model Context Protocol](https://spec.modelcontextprotocol.io/)
 - **Ollama Documentation**: [Ollama Docs](https://ollama.ai/docs)
-- **FastMCP Framework**: Used in this implementation
+- **Official MCP SDK**: Using `mcp>=1.9.4` for protocol compliance
 
 ## 🆘 Troubleshooting
 
@@ -81,10 +84,17 @@ For other agent development approaches:
 - **Missing Prerequisites**: The setup script will check and guide you through installing required tools (nix, uv, curl)
 - **Network Issues**: Use location-specific setup (`./env/setup.sh china` or `./env/setup.sh global`)
 - **Permission Issues**: Ensure you have write access to the project directory
+- **Git Submodule Issues**: If you see "qicore-v4" directory is empty or missing content:
+  ```bash
+  git submodule init && git submodule update
+  # Or if that fails:
+  git submodule update --init --recursive
+  ```
 
 ### Getting Help
 - **Environment Issues**: Check [Development Environment Documentation](../architecture/development-environment.md)
 - **System Integration**: See [uv + Ollama + Nix Integration Guide](uv-ollama-nix-integration.md)
+- **VS Code Git Issues**: See [VS Code Submodule Setup Guide](vscode-submodule-setup.md)
 - **Agent Development**: See [sAgent Architecture Guide](../architecture/sagent-architecture.md)
 - **Technical Details**: Browse [Project Documentation](../README.md)
 

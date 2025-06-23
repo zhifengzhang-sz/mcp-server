@@ -657,15 +657,15 @@ class OllamaClient:
         return response.json()
 ```
 
-### FastMCP Integration
+### MCP SDK Integration
 
 ```python
 # mcp_server/ollama_tools.py
-from fastmcp import FastMCP
+from mcp import Server
 from .integrations.ollama_client import OllamaClient
 
 class OllamaTools:
-    def __init__(self, mcp_server: FastMCP):
+    def __init__(self, mcp_server: Server):
         self.mcp = mcp_server
         self.ollama = OllamaClient()
         self._register_tools()

@@ -14,9 +14,12 @@ This repository contains comprehensive design documentation and setup framework 
 ## 🚀 Quick Start
 
 ```bash
-# Clone repository
-git clone https://github.com/zhifengzhang-sz/mcp-server.git
+# Clone repository with submodules
+git clone --recursive https://github.com/zhifengzhang-sz/mcp-server.git
 cd mcp-server
+
+# If you already cloned without --recursive, initialize submodules:
+# git submodule init && git submodule update
 
 # One-command setup (auto-detects location)
 ./env/setup.sh
