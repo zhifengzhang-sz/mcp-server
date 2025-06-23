@@ -17,7 +17,7 @@ This document evaluates Python packages across all architectural layers, provide
 |-------|----------|------------------|-------------|----------------|
 | Interface | Web Framework | FastAPI | High | Minimal |
 | Interface | CLI Framework | Click | High | Minimal |
-| Interface | MCP Protocol | mcp-python | Medium | Yes |
+| Interface | MCP Protocol | mcp (Official SDK) | High | Minimal |
 | Orchestration | Async Coordination | asyncio + asyncio-pool | High | Yes |
 | Orchestration | Retry Logic | tenacity | High | Minimal |
 | Orchestration | Workflow | Custom State Machine | Low | N/A |
@@ -77,26 +77,46 @@ Type Hints: Good (improving)
 
 **Alternative Considered:** Typer (newer, but less mature ecosystem)
 
-#### MCP Protocol: mcp-python ⚠️ **CONDITIONAL**
+#### MCP Protocol: mcp (Official SDK) ⭐ **SELECTED**
 ```
-Package: mcp==0.4.0
+Package: mcp==1.9.4
 License: MIT
-Async: Limited async support
-Type Hints: Basic
+Async: Full async support
+Type Hints: Excellent
 ```
 
-**Evaluation:**
-- Official MCP Python SDK from Anthropic
-- Still in early development (0.4.0)
-- Missing advanced features like streaming
+**Updated Evaluation (December 2024):**
+- Official Python SDK from Anthropic/modelcontextprotocol
+- Mature and actively maintained (15k+ stars)
+- Incorporates FastMCP 1.0 for high-level interface
+- Full async/await support and streaming capabilities
+- Complete MCP specification compliance
 
-**Wrapper Strategy:** Comprehensive adapter layer that:
-- Adds missing async support
-- Implements streaming capabilities
-- Provides better error handling
-- Adds logging and metrics
+**Why Selected Over Alternatives:**
+- **vs FastMCP 2.0**: Official vs community; FastMCP 2.0 has more features but less official support
+- **vs grpc-mcp-sdk**: Standard JSON-RPC transport vs non-standard gRPC; official compatibility
 
-**Fallback Plan:** If mcp-python proves insufficient, implement MCP protocol directly using JSON-RPC over FastAPI WebSockets
+**Wrapper Strategy:** Lightweight adapter layer that:
+- Provides consistent error handling
+- Adds logging and metrics integration
+- Implements circuit breaker patterns
+- Standardizes response formats
+
+**Integration Approach:** Use FastMCP from official SDK for server creation, standard client for external connections
+
+##### MCP Package Comparison
+
+| Package | Stars | Maintainer | Transport | Status | Use Case |
+|---------|-------|------------|-----------|---------|----------|
+| `mcp` (Official) | 15k+ | Anthropic | JSON-RPC/HTTP | ✅ Official | Primary choice |
+| `fastmcp` v2.0+ | 13k+ | Community | JSON-RPC/HTTP | ✅ Active | Feature-rich alternative |
+| `grpc-mcp-sdk` | New | Community | gRPC | ⚠️ Non-standard | Performance optimization |
+
+**Decision Rationale:**
+- **Official Support**: `mcp` is the official SDK with guaranteed long-term support
+- **Compatibility**: Standard JSON-RPC transport ensures broad client compatibility  
+- **Maturity**: Latest versions (1.9.4) include FastMCP integration and full feature set
+- **Risk Mitigation**: Lower risk of API changes or abandonment
 
 ### Orchestration Layer
 
