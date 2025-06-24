@@ -40,7 +40,7 @@ This document summarizes all updates made to align documentation with our compre
 
 **Files Updated:**
 
-- `docs/package/py.md` - Updated analysis
+- `qicore-v4/docs/package/py.md` - Updated analysis
 - `qicore-v4/docs/sources/guides/impl.py.prompt.md` - Updated implementation guidance
 
 **Rationale:** aioredis functionality has been merged into redis-py, providing unified async/sync interface.
@@ -91,7 +91,7 @@ This document summarizes all updates made to align documentation with our compre
 
 ### 1. Comprehensive Research Documentation
 
-**Created:** `docs/package/py.md`
+**Created:** `qicore-v4/docs/package/py.md`
 
 **Contents:**
 - Executive summary with key findings
@@ -103,7 +103,7 @@ This document summarizes all updates made to align documentation with our compre
 
 ### 2. Implementation Updates Summary
 
-**Research Results:** All package research consolidated in `docs/package/py.md`
+**Research Results:** All package research consolidated in `qicore-v4/docs/package/py.md`
 
 ### 3. Setup Documentation Consistency
 
