@@ -132,7 +132,7 @@ fi
 
 echo ""
 echo "📖 REFERENCE:"
-echo "   - Verification Framework: docs/impl/documentation_verification_checklist.md"
+echo "   - Verification Framework: docs/verification/doc.checklist.md"
 echo "   - Individual Scripts: scripts/verify_*.sh"
 echo "   - Canonical Interfaces: docs/design/phase.1.md"
 
