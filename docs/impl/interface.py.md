@@ -7,7 +7,7 @@
 
 ## Overview
 
-This document specifies the Python implementation strategy for the Interface Layer, including CLI interface with Click, MCP protocol handling with FastAPI, and session management.
+This document specifies the Python implementation strategy for the Interface Layer, including CLI interface with typer, MCP protocol handling with FastAPI, and session management.
 
 **Core Requirement**: Provide responsive, user-friendly interfaces with sub-100ms response times for interactive operations.
 
@@ -15,7 +15,7 @@ This document specifies the Python implementation strategy for the Interface Lay
 
 ```
 Interface Layer
-├── CLIInterface (Click-based command interface)
+├── CLIInterface (typer-based command interface)
 ├── MCPInterface (FastAPI-based protocol handler)
 ├── SessionManager (Session lifecycle management)
 ├── RequestValidator (Input validation and sanitization)
@@ -24,33 +24,49 @@ Interface Layer
 
 ## Package Integration Strategy
 
-### CLI Framework: Click Integration
+### CLI Framework: typer Integration
 ```python
 # Implementation Design
 # mcp_server/interfaces/cli/cli_handler.py
 
+import typer
+from pathlib import Path
+from typing import Optional
+import asyncio
+
+app = typer.Typer(
+    name="qicore",
+    help="MCP Intelligent Agent Server CLI",
+    add_completion=False
+)
+
 class CLIHandler:
-    """Click-based CLI interface with async support"""
+    """typer-based CLI interface with async support"""
     
-    # Main CLI Group
-    @click.group()
-    @click.option('--config', type=click.Path(), help='Configuration file path')
-    @click.option('--verbose', '-v', count=True, help='Verbose output')
-    @click.pass_context
-    def cli(ctx, config, verbose):
+    def __init__(self):
+        self.config: Optional[Path] = None
+        self.verbose: int = 0
+    
+    @app.callback()
+    def main(
+        self,
+        config: Optional[Path] = typer.Option(None, "--config", help="Configuration file path"),
+        verbose: int = typer.Option(0, "--verbose", "-v", count=True, help="Verbose output")
+    ):
         """MCP Intelligent Agent Server CLI"""
-        ctx.ensure_object(dict)
-        ctx.obj['config'] = config
-        ctx.obj['verbose'] = verbose
+        self.config = config
+        self.verbose = verbose
         setup_logging(verbose)
     
     # Core Commands
-    @cli.command()
-    @click.argument('query', required=True)
-    @click.option('--context', '-c', help='Additional context')
-    @click.option('--workspace', '-w', type=click.Path(), help='Workspace path')
-    @click.option('--stream', is_flag=True, help='Stream response')
-    async def ask(query, context, workspace, stream):
+    @app.command()
+    def ask(
+        self,
+        query: str = typer.Argument(..., help="Question to ask the agent"),
+        context: Optional[str] = typer.Option(None, "--context", "-c", help="Additional context"),
+        workspace: Optional[Path] = typer.Option(None, "--workspace", "-w", help="Workspace path"),
+        stream: bool = typer.Option(False, "--stream", help="Stream response")
+    ):
         """Ask the intelligent agent a question"""
         
         # Create request
@@ -62,17 +78,17 @@ class CLIHandler:
         )
         
         # Process through orchestration
-        result = await orchestrator.process_request(request)
+        result = asyncio.run(self.orchestrator.process_request(request))
         
         # Format and display response
         if stream:
-            await stream_response(result)
+            asyncio.run(self.stream_response(result))
         else:
-            click.echo(format_response(result))
+            typer.echo(self.format_response(result))
     
     # Async Command Wrapper
     def async_command(f):
-        """Decorator to handle async commands in Click"""
+        """Decorator to handle async commands in typer"""
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             return asyncio.run(f(*args, **kwargs))
@@ -360,10 +376,10 @@ mcp_server/interfaces/
 │
 ├── cli/                             # CLI interface
 │   ├── __init__.py
-│   ├── cli_handler.py               # Click-based CLI
+│   ├── cli_handler.py               # typer-based CLI
 │   ├── commands.py                  # CLI command definitions
 │   ├── formatters.py                # CLI output formatting
-│   └── async_support.py             # Async utilities for Click
+│   └── async_support.py             # Async utilities for typer
 │
 ├── mcp/                             # MCP protocol interface
 │   ├── __init__.py
@@ -450,14 +466,14 @@ class ResponseFormatter:
         
         async for chunk in result_stream:
             if chunk.type == "content":
-                click.echo(chunk.content, nl=False)
+                typer.echo(chunk.content, nl=False)
             elif chunk.type == "status":
-                click.echo(f"\n[{chunk.status}]", err=True)
+                typer.echo(f"\n[{chunk.status}]", err=True)
             elif chunk.type == "error":
-                click.echo(f"\nError: {chunk.error}", err=True)
+                typer.echo(f"\nError: {chunk.error}", err=True)
                 break
         
-        click.echo()  # Final newline
+        typer.echo()  # Final newline
     
     async def stream_mcp_response(self, websocket: WebSocket, 
                                 result_stream: AsyncIterator[ProcessingChunk]):
@@ -546,9 +562,9 @@ class RequestValidator:
 
 **Implementation Status**: Design complete, ready for interface development  
 **Next Steps**:
-1. Implement Click-based CLI with async support
+1. Implement typer-based CLI with async support
 2. Create FastAPI MCP protocol handler
 3. Build session management system
 4. Develop request validation and formatting
 
-**Dependencies**: Click, FastAPI, WebSockets, Pydantic 
+**Dependencies**: typer, FastAPI, WebSockets, Pydantic 

@@ -1,4 +1,6 @@
 {
+    "git.path": "wsl",
+    "remote.WSL.fileSystemWatcher": true,
     "git.detectSubmodules": true,
     "git.fetchOnPull": true,
     "git.autofetch": true,
@@ -24,5 +26,12 @@
         "**/node_modules": true,
         "**/bower_components": true,
         "**/.git": true
+    },
+    "workbench.colorCustomizations": {
+        "gitDecoration.submoduleResourceForeground": "#888888",
+        "gitDecoration.untrackedResourceForeground": "#73C991",
+        "gitDecoration.modifiedResourceForeground": "#E2C08D",
+        "gitDecoration.deletedResourceForeground": "#F14C4C",
+        "gitDecoration.conflictingResourceForeground": "#E64946"
     }
 } 

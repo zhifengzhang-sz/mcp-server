@@ -10,6 +10,7 @@
         }
     ],
     "settings": {
+        "git.useIntegratedTerminal": true,
         "git.detectSubmodules": true,
         "git.fetchOnPull": true,
         "git.autofetch": true,

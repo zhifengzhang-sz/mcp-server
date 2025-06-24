@@ -35,7 +35,7 @@ Phase 2.3: Orchestration Layer (Weeks 5-6)
 ├── Retry logic integration
 
 Phase 2.4: Interface Integration (Weeks 7-8)
-├── CLI interface with Click
+├── CLI interface with typer
 ├── MCP protocol with FastAPI
 ├── Session management system
 ├── Response formatting and streaming
@@ -118,10 +118,10 @@ All package integrations are configuration-driven:
    - Integration: Model manager with lazy loading
    - Fallback: TF-IDF or keyword matching
    
-3. Click (CLI Framework)
-   - Risk: Medium  
-   - Integration: Async command decorators
-   - Fallback: argparse with custom parsing
+3. typer (CLI Framework)
+   - Risk: Low  
+   - Integration: Async command decorators with FastAPI consistency
+   - Fallback: click with custom async support
    
 4. tenacity (Retry Logic)
    - Risk: Low-Medium
@@ -133,9 +133,9 @@ All package integrations are configuration-driven:
 ```python
 # These packages may need alternative implementations
 
-1. mcp-python (MCP Protocol)
-   - Risk: High (young library)
-   - Integration: Comprehensive adapter layer
+1. mcp (Official MCP SDK)
+   - Risk: Low (official Anthropic package)
+   - Integration: Direct usage with QICORE-V4 wrapper
    - Fallback: Direct JSON-RPC over WebSockets
    
 2. ollama-python (LLM Client)
@@ -267,14 +267,14 @@ Implement user-facing interfaces with proper protocol compliance and session man
 #### Deliverables
 ```
 mcp_server/interfaces/               # Complete interface layer
-├── cli/                             # Click-based CLI
+├── cli/                             # typer-based CLI
 ├── mcp/                             # FastAPI-based MCP server
 ├── sessions/                        # Session management
 └── processing/                      # Request processing integration
 ```
 
 #### Implementation Strategy
-1. **CLI Interface**: Implement Click-based CLI with async support
+1. **CLI Interface**: Implement typer-based CLI with async support
 2. **MCP Protocol**: Build FastAPI server with WebSocket streaming
 3. **Session Management**: Create unified session handling for both interfaces
 4. **Request Processing**: Integrate with orchestration layer
