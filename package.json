@@ -1,0 +1,93 @@
+{
+  "name": "mathforge",
+  "version": "1.0.0",
+  "description": "Universal Mathematical Code Generator with Formal Verification",
+  "module": "index.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "mathforge": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "bun run build:compile",
+    "build:compile": "bun tsc",
+    "build:watch": "bun tsc --watch",
+    "dev": "bun run --watch index.ts",
+    "test": "bun run vitest run",
+    "test:watch": "bun run vitest",
+    "test:property": "bun run vitest run --reporter=verbose",
+    "test:coverage": "bun run vitest run --coverage",
+    "test:ui": "bun run vitest --ui",
+    "lint": "bun run lint:biome && bun run lint:eslint",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "lint:fix": "biome check --write . && eslint --fix .",
+    "format": "biome format --write .",
+    "typecheck": "bun tsc --noEmit",
+    "clean": "rm -rf dist/",
+    "validate": "bun run typecheck && bun run lint && bun run test",
+    "docs:generate": "typedoc index.ts --out docs/api",
+    "docs:serve": "bun --bun serve docs -p 8080"
+  },
+  "keywords": [
+    "code-generation",
+    "mathematical",
+    "formal-verification",
+    "property-based-testing",
+    "typescript",
+    "python",
+    "haskell",
+    "functional-programming",
+    "category-theory",
+    "zod",
+    "fast-check",
+    "fp-ts"
+  ],
+  "author": "QiCore Team",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
+    "@eslint/js": "^9.30.0",
+    "@stylistic/eslint-plugin": "^5.1.0",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.7",
+    "@types/yaml": "^1.9.7",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "eslint": "^9.30.0",
+    "fast-check": "^4.1.1",
+    "typedoc": "^0.28.7",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.0",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "fp-ts": "^2.16.10",
+    "yaml": "^2.8.0",
+    "zod": "^3.25.67"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qi/mathforge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qi/mathforge/issues"
+  },
+  "homepage": "https://mathforge.dev"
+} 

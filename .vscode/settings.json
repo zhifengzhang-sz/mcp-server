@@ -33,5 +33,6 @@
         "gitDecoration.modifiedResourceForeground": "#E2C08D",
         "gitDecoration.deletedResourceForeground": "#F14C4C",
         "gitDecoration.conflictingResourceForeground": "#E64946"
-    }
+    },
+    "terminal.integrated.defaultProfile.linux": "bash"
 } 

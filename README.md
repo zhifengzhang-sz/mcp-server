@@ -1,32 +1,34 @@
-# MCP Intelligent Agent Server
+# AI Code Generation Consistency Study
 
-**A Model Context Protocol (MCP) server implementation with intelligent agent capabilities and 4-phase progressive enhancement architecture.**
+**A sophisticated AI consistency study platform using TypeScript/Bun stack to measure AI code generation consistency across different models, focusing on Haskell code generation.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Documentation Status](https://img.shields.io/badge/docs-complete-brightgreen.svg)](docs/)
-[![Phase](https://img.shields.io/badge/phase-1_ready-blue.svg)](docs/objective/)
+[![Runtime](https://img.shields.io/badge/runtime-bun-orange.svg)](https://bun.sh/)
+[![FP Foundation](https://img.shields.io/badge/foundation-qicore_v4-blue.svg)](https://github.com/qi-protocol/qicore-v4)
 
 ## 🎯 Project Overview
 
-This project implements an intelligent MCP server with a **plugin-ready foundation** that evolves through 4 strategic phases:
+This study implements a **4-layer functional programming architecture** for measuring AI code generation consistency:
 
-- **Phase 1**: Plugin-ready foundation with functional programming patterns ✅ **COMPLETE**
-- **Phase 2**: RAG (Retrieval-Augmented Generation) integration 🔄 **PLANNED**
-- **Phase 3**: sAgent (specialized agent) coordination 🔄 **PLANNED**
-- **Phase 4**: Autonomous capabilities 🔄 **PLANNED**
+1. **Interfaces** - Pure type definitions and contracts ✅ **COMPLETE**
+2. **Core** - Mathematical foundations (Result, QiError) ✅ **COMPLETE**  
+3. **Components** - QiPrompt (prompt engineering) + QiAgent (AI providers) ✅ **COMPLETE**
+4. **Application** - Study orchestration and analysis ✅ **COMPLETE**
 
 ## 📚 Documentation Architecture
 
-Our documentation follows a **4-layer architectural approach** ensuring complete traceability from objectives to implementation:
+**All documentation is now organized in `/docs`** following proper naming conventions:
 
 ```
 docs/
-├── objective/          # Strategic objectives and phase definitions
-├── architecture/       # High-level architectural patterns and strategies
-├── design/            # Language-agnostic design specifications
-├── impl/              # Production-ready implementation specifications
-└── agent/             # Documentation consistency verification instructions
+├── contracts/         # Component interface contracts  
+├── arch/             # System architecture and design
+├── guides/           # User and developer guides
+└── impl/             # Implementation analysis and alignment
 ```
+
+👉 **Start with**: [`docs/readme.md`](docs/readme.md) for complete documentation index
 
 ### Documentation Status: ✅ **COMPLETE AND IMPLEMENTATION-READY**
 
@@ -37,39 +39,50 @@ docs/
 | **Design** | ✅ Complete | All components specified | Language-agnostic |
 | **Implementation** | ✅ Complete | Production-ready specs | Type-safe, extensible |
 
+## ✨ Key Features
+
+- **🚀 Modern Tech Stack**: Bun runtime (3x faster than Node.js), Biome linter (10-100x faster than ESLint+Prettier)
+- **🤖 AI Integration**: Claude Code CLI/SDK integration with multiple provider support
+- **📐 Mathematical Foundation**: QiCore v4.0 base components with Result monad and QiError system
+- **📊 Study Platform**: Comprehensive code generation analysis with quality metrics
+- **🔧 Package-Based**: Following QiCore v4 TypeScript specification with proven libraries
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.11+
-- uv (Python package manager)
-- Nix (optional, for reproducible development environment)
+- **Bun** 1.2.0+ (JavaScript runtime)
+- **TypeScript** 5.3.0+
+- **Claude Code CLI** (for AI integration)
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/mcp-server.git
-cd mcp-server
+git clone https://github.com/your-org/ai-consistency-study.git
+cd ai-consistency-study
 
-# Initialize submodules
-git submodule update --init --recursive
+# Install dependencies with Bun
+bun install
 
-# Install dependencies with uv
-uv install
-
-# Activate virtual environment
-source .venv/bin/activate
+# Run development server
+bun dev
 ```
 
-### Development Setup
+### Development Commands
 
 ```bash
-# Setup development environment (see docs/setup/ for details)
-./scripts/setup-dev.sh
+# Run tests
+bun test
 
-# Verify documentation consistency
-./scripts/verify_all.sh
+# Run linting
+bun run lint
+
+# Generate study results
+bun src/generators/run-study.ts
+
+# Start analysis dashboard
+bun src/dashboard/server.ts
 ```
 
 ## 🏗️ Architecture Highlights

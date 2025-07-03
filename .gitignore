@@ -1,94 +1,39 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Python testing & development
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Python workspace-specific (for multi-language workspace)
-python/.venv/
-python/__pycache__/
-python/.pytest_cache/
-python/.coverage
-python/htmlcov/
-python/.mypy_cache/
-
-# TypeScript & JavaScript
+# Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
 *.tsbuildinfo
-.npm
-.yarn/
-.pnp.*
 
-# TypeScript workspace-specific (for multi-language workspace)
-typescript/node_modules/
-typescript/dist/
-typescript/.tsbuildinfo
-typescript/bun.lock
-typescript/coverage/
+# Coverage
+coverage/
+.nyc_output/
 
-# IDEs
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Project specific
-.ollama/
-data/
+# Logs
+logs/
 *.log
-.python-version
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Nix
-result
-result-*
-
-# uv
-.uv-cache/ 
+# Cache
+.cache/
+.temp/ 
