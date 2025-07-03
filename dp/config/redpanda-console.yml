@@ -1,0 +1,93 @@
+# Redpanda Console Configuration
+kafka:
+  brokers: ["redpanda:9092"]
+  schemaRegistry:
+    enabled: true
+    urls: ["http://redpanda:8081"]
+  
+console:
+  topicDocumentation:
+    enabled: true
+    git:
+      enabled: false
+  
+# Topic configurations for better visualization
+topicDocumentation:
+  crypto.market.data: |
+    # Market Data Topic
+    
+    This topic contains real-time cryptocurrency market data including OHLCV (Open, High, Low, Close, Volume) 
+    data from various exchanges.
+    
+    **Message Format**: JSON
+    **Partitioning**: By symbol
+    **Retention**: 7 days
+    
+    ## Schema
+    ```json
+    {
+      "timestamp": "2025-01-01T00:00:00Z",
+      "symbol": "BTC",
+      "exchange": "binance", 
+      "open": 45000.00,
+      "high": 45500.00,
+      "low": 44800.00,
+      "close": 45200.00,
+      "volume": 1234.567
+    }
+    ```
+    
+  crypto.signals: |
+    # Trading Signals Topic
+    
+    AI-generated trading signals from various agents analyzing market conditions.
+    
+    **Message Format**: JSON
+    **Partitioning**: By agent_id
+    **Retention**: 30 days
+    
+    ## Schema
+    ```json
+    {
+      "timestamp": "2025-01-01T00:00:00Z",
+      "agent_id": "technical-analysis-1",
+      "signal_type": "buy",
+      "symbol": "ETH",
+      "strength": 0.85,
+      "confidence": 0.92,
+      "reasoning": "Strong bullish pattern detected with RSI oversold...",
+      "metadata": {
+        "pattern": "ascending_triangle",
+        "indicators": {...}
+      }
+    }
+    ```
+    
+  crypto.analysis: |
+    # Market Analysis Topic
+    
+    Detailed market analysis results from AI agents including technical indicators,
+    pattern recognition, and trend analysis.
+    
+    **Message Format**: JSON  
+    **Partitioning**: By symbol
+    **Retention**: 90 days
+    
+    ## Schema
+    ```json
+    {
+      "timestamp": "2025-01-01T00:00:00Z",
+      "symbol": "ADA",
+      "agent_id": "market-monitor-1", 
+      "trend": "up",
+      "pattern": "head_and_shoulders",
+      "indicators": [
+        {
+          "name": "RSI",
+          "value": 65.2,
+          "signal": "neutral"
+        }
+      ],
+      "ai_analysis": "Market showing strong momentum..."
+    }
+    ```
